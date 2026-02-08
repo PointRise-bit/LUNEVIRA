@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUNEVIRA</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:linear-gradient(135deg,#0b0f1a,#1a1f2e);
+  color:white;
+}
+
+header{
+  background:black;
+  padding:20px;
+  text-align:center;
+  font-size:26px;
+  letter-spacing:2px;
+}
+
+.container{
+  padding:25px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:25px;
+}
+
+.card{
+  background:#141925;
+  border-radius:15px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  text-align:center;
+  padding-bottom:15px;
+  transition:.3s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+}
+
+.card h3{
+  margin:15px 0 5px;
+}
+
+.card p{
+  color:#ccc;
+  margin-bottom:10px;
+}
+
+button{
+  background:gold;
+  border:none;
+  padding:10px 18px;
+  border-radius:20px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#f1d37a;
+}
+
+#cartBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#16a34a;
+  color:black;
+  padding:15px 25px;
+  border-radius:50px;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>LUNEVIRA ✨</header>
+
+<div class="container">
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1594035910387-fea47794261f">
+<h3>Velvet Noir</h3>
+<p>120 دينار</p>
+<button onclick="addItem('Velvet Noir',120)">أضف للسلة</button>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083">
+<h3>Royale Glasses</h3>
+<p>110 دينار</p>
+<button onclick="addItem('Royale Glasses',110)">أضف للسلة</button>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1585386959984-a41552231658">
+<h3>Amber Gold</h3>
+<p>150 دينار</p>
+<button onclick="addItem('Amber Gold',150)">أضف للسلة</button>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1577805947697-89e18249d767">
+<h3>Titan Shades</h3>
+<p>140 دينار</p>
+<button onclick="addItem('Titan Shades',140)">أضف للسلة</button>
+</div>
+
+</div>
+
+<div id="cartBtn" onclick="sendOrder()">🛒 اطلب عبر واتساب</div>
+
+<script>
+let cart = [];
+
+function addItem(name,price){
+cart.push({name,price});
+alert("تمت الإضافة للسلة");
+}
+
+function sendOrder(){
+if(cart.length===0){
+alert("السلة فارغة");
+return;
+}
+
+let total=0;
+let message="طلب جديد من LUNEVIRA:%0A----------------%0A";
+
+cart.forEach(item=>{
+message+=item.name+" - "+item.price+" دينار%0A";
+total+=item.price;
+});
+
+message+="----------------%0Aالإجمالي: "+total+" دينار";
+
+window.open("https://wa.me/21698236358?text="+message);
+}
+</script>
+
+</body>
+</html>
