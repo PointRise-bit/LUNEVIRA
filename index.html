@@ -1,118 +1,143 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LUNEVIRA — اختبار التسجيل</title>
-  <style>
-    body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
-    .box{max-width:520px;margin:18px auto;padding:16px}
-    .card{border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);border-radius:16px;padding:14px}
-    input{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;outline:none;margin-top:10px}
-    button{padding:12px 14px;border-radius:14px;border:0;font-weight:900;cursor:pointer;margin-top:10px}
-    .a{background:linear-gradient(135deg,#f1d37a,#d4af37);color:#071018}
-    .b{background:transparent;border:1px solid rgba(255,255,255,.15);color:#fff}
-    .log{margin-top:12px;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.35);white-space:pre-wrap;line-height:1.6}
-    .small{opacity:.8;font-size:12px;line-height:1.7}
-  </style>
-
-  <!-- Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2" defer></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUNEVIRA Marketplace</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff;padding:15px}
+.card{border:1px solid rgba(255,255,255,.15);padding:15px;border-radius:15px;margin-top:15px;background:rgba(255,255,255,.05)}
+input,select{width:100%;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #444;background:#111;color:#fff}
+button{padding:10px 15px;border-radius:10px;border:none;font-weight:bold;margin-top:10px;cursor:pointer}
+.gold{background:gold;color:#000}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px}
+.small{font-size:12px;opacity:.8}
+</style>
 </head>
 <body>
-  <div class="box">
-    <div class="card">
-      <h2 style="margin:0 0 6px">اختبار تسجيل/دخول Supabase</h2>
-      <div class="small">
-        اكتب إيميل صحيح مثل: <b>test123@gmail.com</b><br/>
-        كلمة المرور: 8 أحرف أو أكثر.
-      </div>
 
-      <input id="email" type="email" placeholder="test123@gmail.com" />
-      <input id="pass" type="password" placeholder="12345678" />
+<h2>LUNEVIRA Marketplace</h2>
 
-      <button class="a" id="signup">تسجيل جديد</button>
-      <button class="b" id="signin">دخول</button>
-      <button class="b" id="logout" style="display:none">خروج</button>
+<div class="card">
+<h3>تسجيل / دخول</h3>
+<input id="email" placeholder="email">
+<input id="pass" type="password" placeholder="password">
+<button class="gold" onclick="signup()">تسجيل</button>
+<button onclick="login()">دخول</button>
+<button onclick="logout()">خروج</button>
+<div id="userBox"></div>
+</div>
 
-      <div class="log" id="log">جاهز…</div>
+<div class="card">
+<h3>إضافة منتج</h3>
+<input id="pname" placeholder="اسم المنتج">
+<input id="pprice" type="number" placeholder="السعر">
+<input id="pimage" placeholder="رابط صورة">
+<button class="gold" onclick="addProduct()">إضافة</button>
+</div>
 
-      <div class="small" style="margin-top:10px">
-        إذا ظهر لك خطأ هنا، انسخه وارسله لي وسأعطيك الحل النهائي فورًا.
-      </div>
-    </div>
-  </div>
+<div class="card">
+<h3>المنتجات</h3>
+<div id="products" class="grid"></div>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const log = (m)=>{ document.getElementById("log").textContent = String(m); };
-  const emailEl = document.getElementById("email");
-  const passEl  = document.getElementById("pass");
 
-  // بياناتك (جاهزة)
-  const SUPABASE_URL = "https://muowobprjsaiqxlcrtav.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11b3dvYnByanNhaXF4bGNydGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2Mjc4MDEsImV4cCI6MjA4NjIwMzgwMX0.KTK4yPFO-GZHSDG41JBq1H4kHO17iR7pr9lRU4crbfE";
+const TRC20 = "TUG7EVJBsZZ61K3X7hAik8438eLqXyVAQm";
+const BEP20 = "0xec92a420efe51e1482bff48b604827734d313fab";
+const COMMISSION = 0.08;
 
-  await new Promise(r=>setTimeout(r, 50));
+const supabase = supabase.createClient(
+"https://muowobprjsaiqxlcrtav.supabase.co",
+"YOUR_ANON_KEY_HERE"
+);
 
-  if(!window.supabase){
-    log("❌ مكتبة Supabase لم تُحمّل (شبكتك تمنع unpkg أو يوجد مانع إعلانات). جرّب شبكة أخرى أو أوقف AdBlock.");
-    return;
-  }
+async function signup(){
+const email=document.getElementById("email").value;
+const pass=document.getElementById("pass").value;
+await supabase.auth.signUp({email,password:pass});
+alert("تم التسجيل");
+}
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+async function login(){
+const email=document.getElementById("email").value;
+const pass=document.getElementById("pass").value;
+await supabase.auth.signInWithPassword({email,password:pass});
+checkUser();
+}
 
-  async function refresh(){
-    const { data, error } = await supabase.auth.getSession();
-    if(error) log("Session error: " + error.message);
-    const user = data.session?.user || null;
-    document.getElementById("logout").style.display = user ? "" : "none";
-    log(user ? ("✅ أنت داخل: " + user.email) : "غير مسجّل. جرّب تسجيل جديد/دخول.");
-  }
+async function logout(){
+await supabase.auth.signOut();
+checkUser();
+}
 
-  document.getElementById("signup").onclick = async () => {
-    try{
-      const email = emailEl.value.trim();
-      const password = passEl.value;
-      if(!email.includes("@")) { log("❌ اكتب إيميل صحيح (يحتوي @)"); return; }
-      if(password.length < 8) { log("❌ كلمة المرور لازم 8 أحرف أو أكثر"); return; }
+async function checkUser(){
+const {data}=await supabase.auth.getSession();
+const user=data.session?.user;
+document.getElementById("userBox").innerHTML=user?`أنت داخل: ${user.email}`:"غير مسجل";
+}
+checkUser();
 
-      log("… جاري إنشاء حساب");
-      const { data, error } = await supabase.auth.signUp({ email, password });
+async function addProduct(){
+const {data}=await supabase.auth.getSession();
+const user=data.session?.user;
+if(!user)return alert("سجل دخول");
 
-      if(error) { log("❌ SignUp error: " + error.message); return; }
+await supabase.from("products").insert([{
+name:document.getElementById("pname").value,
+price:document.getElementById("pprice").value,
+image:document.getElementById("pimage").value,
+seller_id:user.id
+}]);
 
-      // قد يحتاج تأكيد بريد حسب إعداداتك
-      log("✅ SignUp OK.\n" +
-          (data.user?.email ? ("User: " + data.user.email + "\n") : "") +
-          (data.session ? "Session created ✅" : "Session = null (غالبًا Confirm Email مفعّل)"));
-      await refresh();
-    }catch(e){
-      log("❌ Crash: " + (e?.message || e));
-    }
-  };
+loadProducts();
+}
 
-  document.getElementById("signin").onclick = async () => {
-    try{
-      const email = emailEl.value.trim();
-      const password = passEl.value;
-      log("… جاري تسجيل الدخول");
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if(error) { log("❌ SignIn error: " + error.message); return; }
-      log("✅ SignIn OK: " + (data.user?.email || "—"));
-      await refresh();
-    }catch(e){
-      log("❌ Crash: " + (e?.message || e));
-    }
-  };
-
-  document.getElementById("logout").onclick = async () => {
-    await supabase.auth.signOut();
-    await refresh();
-  };
-
-  await refresh();
+async function loadProducts(){
+const {data}=await supabase.from("products").select("*");
+let html="";
+data.forEach(p=>{
+html+=`
+<div class="card">
+<img src="${p.image}" width="100%">
+<h4>${p.name}</h4>
+<p>${p.price} USDT</p>
+<button onclick="buy('${p.id}',${p.price})" class="gold">شراء</button>
+</div>
+`;
 });
+document.getElementById("products").innerHTML=html;
+}
+loadProducts();
+
+async function buy(id,price){
+const network=prompt("اكتب الشبكة: TRC20 أو BEP20");
+const tx=prompt("اكتب Tx Hash");
+if(!network||!tx)return;
+
+const {data}=await supabase.auth.getSession();
+const user=data.session?.user;
+if(!user)return alert("سجل دخول");
+
+const fee=price*COMMISSION;
+const seller=price-fee;
+
+await supabase.from("orders").insert([{
+user_id:user.id,
+product_id:id,
+amount:price,
+network:network,
+tx_hash:tx,
+platform_fee:fee,
+seller_amount:seller,
+status:"pending"
+}]);
+
+alert("أرسل المبلغ إلى:\n"+(network=="TRC20"?TRC20:BEP20));
+}
+
 </script>
+
 </body>
-        </html>
+</html>
