@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LUNEVIRA — دفع USDT</title>
+  <style>
+    body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff}
+    .wrap{max-width:900px;margin:0 auto;padding:16px}
+    .card{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);border-radius:16px;padding:14px;margin-top:12px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:820px){.row{grid-template-columns:1fr}}
+    input,select,textarea{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;outline:none}
+    textarea{min-height:90px;resize:vertical}
+    .btn{border:0;border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer}
+    .gold{background:linear-gradient(135deg,#f1d37a,#d4af37);color:#071018}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,.16);color:#fff}
+    .muted{opacity:.82;line-height:1.7;font-size:13px}
+    .addr{word-break:break-all;background:rgba(0,0,0,.35);padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.16)}
+    .ok{color:#34d399;font-weight:900}
+    .bad{color:#ffb4b4;font-weight:900}
+  </style>
+  <script src="https://unpkg.com/@supabase/supabase-js@2" defer></script>
+</head>
+<body>
+<div class="wrap">
+  <h2 style="margin:6px 0">دفع USDT — LUNEVIRA</h2>
+  <div class="muted">اختر الشبكة، انسخ العنوان، أرسل المبلغ، ثم ضع TxHash للتأكيد. العمولة: <b>8%</b>.</div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <div class="muted">الشبكة</div>
+        <select id="net">
+          <option value="TRC20">USDT (TRC20)</option>
+          <option value="BEP20">USDT (BEP20)</option>
+        </select>
+      </div>
+      <div>
+        <div class="muted">المبلغ (USDT)</div>
+        <input id="amount" type="number" placeholder="مثال: 100" />
+      </div>
+    </div>
+
+    <div style="margin-top:12px" class="muted">عنوان الدفع:</div>
+    <div class="addr" id="addrBox"></div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn ghost" id="copyBtn">نسخ العنوان</button>
+      <button class="btn ghost" id="showQrBtn">عرض QR</button>
+    </div>
+
+    <div id="qr" style="display:none;margin-top:12px"></div>
+
+    <div class="muted" style="margin-top:12px">
+      بعد التحويل، انسخ <b>TxHash</b> من محفظتك والصقه هنا:
+    </div>
+    <input id="tx" placeholder="Tx Hash" style="margin-top:8px" />
+
+    <div class="row" style="margin-top:10px">
+      <input id="name" placeholder="الاسم الكامل" />
+      <input id="phone" placeholder="الهاتف" />
+    </div>
+    <textarea id="address" placeholder="العنوان الكامل"></textarea>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn gold" id="submit">تأكيد الدفع (تسجيل الطلب)</button>
+      <button class="btn ghost" id="check">فحص تسجيل الدخول</button>
+    </div>
+
+    <div id="msg" class="muted" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 8px">ملاحظة</h3>
+    <div class="muted">
+      - الطلب يُسجَّل بحالة <b>pending_verification</b> حتى يتم التحقق من التحويل.<br/>
+      - لا ترسل تحويلات إلى شبكة غير الشبكة المختارة.<br/>
+      - لا تشارك seed phrase أو private key مع أي شخص.
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", async ()=>{
+  const TRC20_ADDR = "TUG7EVJBsZZ61K3X7hAik8438eLqXyVAQm";
+  const BEP20_ADDR = "0xec92a420efe51e1482bff48b604827734d313fab";
+  const COMMISSION_RATE = 0.08;
+
+  const SUPABASE_URL = "https://muowobprjsaiqxlcrtav.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11b3dvYnByanNhaXF4bGNydGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2Mjc4MDEsImV4cCI6MjA4NjIwMzgwMX0.KTK4yPFO-GZHSDG41JBq1H4kHO17iR7pr9lRU4crbfE";
+
+  const $ = (id)=>document.getElementById(id);
+  const msg = (t, ok=true)=> $("msg").innerHTML = (ok? `<span class="ok">${t}</span>` : `<span class="bad">${t}</span>`);
+
+  await new Promise(r=>setTimeout(r, 50));
+  if(!window.supabase){ msg("مكتبة Supabase لم تُحمّل.", false); return; }
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function currentAddr(){
+    return $("net").value === "TRC20" ? TRC20_ADDR : BEP20_ADDR;
+  }
+  function renderAddr(){
+    $("addrBox").textContent = currentAddr();
+    $("qr").style.display="none";
+    $("qr").innerHTML="";
+  }
+  $("net").addEventListener("change", renderAddr);
+  renderAddr();
+
+  $("copyBtn").onclick = async ()=>{
+    await navigator.clipboard.writeText(currentAddr());
+    msg("تم نسخ العنوان ✅");
+  };
+
+  $("showQrBtn").onclick = ()=>{
+    const a = currentAddr();
+    // QR بسيط عبر Google Chart (بدون مكتبات)
+    const url = "https://chart.googleapis.com/chart?cht=qr&chs=220x220&chl=" + encodeURIComponent(a);
+    $("qr").style.display="block";
+    $("qr").innerHTML = `<img alt="QR" src="${url}" style="border-radius:12px;border:1px solid rgba(255,255,255,.16)" />`;
+  };
+
+  $("check").onclick = async ()=>{
+    const {data} = await supabase.auth.getSession();
+    const u = data.session?.user;
+    msg(u ? ("أنت مسجل: " + u.email) : "لازم تسجل دخول أولاً في صفحة المنصة.", !!u);
+  };
+
+  $("submit").onclick = async ()=>{
+    const {data} = await supabase.auth.getSession();
+    const user = data.session?.user;
+    if(!user){ msg("لازم تسجل دخول أولاً.", false); return; }
+
+    const amount = Number($("amount").value);
+    const tx = $("tx").value.trim();
+    const full_name = $("name").value.trim();
+    const phone = $("phone").value.trim();
+    const address = $("address").value.trim();
+    const network = $("net").value;
+
+    if(!Number.isFinite(amount) || amount <= 0){ msg("اكتب مبلغ صحيح.", false); return; }
+    if(tx.length < 20){ msg("TxHash غير صحيح (قصير).", false); return; }
+    if(!full_name || !phone || !address){ msg("املأ الاسم/الهاتف/العنوان.", false); return; }
+
+    const platform_fee = +(amount * COMMISSION_RATE).toFixed(2);
+    const seller_amount = +(amount - platform_fee).toFixed(2);
+
+    const payload = {
+      user_id: user.id,
+      full_name,
+      phone,
+      address,
+      total: amount,
+      payment_method: "USDT",
+      payment_status: "pending_verification",
+      tx_hash: tx,
+      network,
+      platform_fee,
+      seller_amount
+    };
+
+    const {error} = await supabase.from("orders").insert([payload]);
+    if(error){ msg("خطأ تسجيل الطلب: " + error.message, false); return; }
+
+    msg("تم تسجيل الطلب ✅ سيتم التحقق من التحويل.");
+    $("tx").value="";
+  };
+});
+</script>
+</body>
+</html>
