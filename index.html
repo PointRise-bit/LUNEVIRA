@@ -1,202 +1,285 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>LUNEVIRA — متجر متكامل</title>
-<style>
-  :root{
-    --bg:#0b0f1a; --card:rgba(255,255,255,.06); --line:rgba(255,255,255,.12);
-    --text:#f5f7ff; --muted:rgba(245,247,255,.72);
-    --gold:#d4af37; --gold2:#f1d37a; --ok:#22c55e; --bad:#ef4444;
-    --r:18px; --shadow:0 18px 60px rgba(0,0,0,.55);
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;color:var(--text);
-    background:
-      radial-gradient(900px 600px at 80% -10%, rgba(212,175,55,.22), transparent 55%),
-      radial-gradient(700px 500px at 10% 10%, rgba(124,58,237,.18), transparent 60%),
-      linear-gradient(180deg,#070a12,var(--bg));
-    min-height:100vh;
-  }
-  .wrap{width:min(1100px,100%);margin:0 auto;padding:16px}
-  .top{position:sticky;top:0;z-index:10;background:rgba(7,10,18,.76);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px}
-  .brand{display:flex;align-items:center;gap:10px}
-  .logo{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);
-    background:linear-gradient(135deg,rgba(212,175,55,.22),rgba(255,255,255,.06));
-    display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)
-  }
-  .brand h1{margin:0;font-size:16px;letter-spacing:1px}
-  .brand p{margin:0;font-size:12px;color:var(--muted)}
-  .pill{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:999px;border:1px solid var(--line);
-    background:rgba(255,255,255,.06);cursor:pointer;font-size:12px;user-select:none}
-  .pill:active{transform:translateY(1px)}
-  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-  .card{border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:var(--r);box-shadow:var(--shadow)}
-  .panel{padding:14px}
-  .h{margin:0 0 8px;font-size:16px}
-  .muted{color:var(--muted);font-size:13px;line-height:1.7}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  @media(max-width:900px){.row{grid-template-columns:1fr}}
-  input,select,textarea{width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);
-    background:rgba(255,255,255,.06);color:var(--text);outline:none}
-  textarea{min-height:90px;resize:vertical}
-  .btn{border:0;border-radius:14px;padding:12px 14px;cursor:pointer;font-weight:900}
-  .btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#071018}
-  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
-  .btn.ok{background:linear-gradient(135deg,#34d399,var(--ok));color:#06130b}
-  .btn.bad{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.35);color:#ffd7d7}
-  .sep{height:1px;background:var(--line);margin:12px 0}
-  .items{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-  .item{grid-column:span 4;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
-  @media(max-width:980px){.item{grid-column:span 6}}
-  @media(max-width:560px){.item{grid-column:span 12}}
-  .thumb{height:150px;background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));position:relative;overflow:hidden}
-  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-  .tag{position:absolute;top:10px;right:10px;font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);
-    background:rgba(0,0,0,.28);backdrop-filter:blur(8px)}
-  .body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
-  .title{margin:0;font-size:14px}
-  .desc{margin:0;color:var(--muted);font-size:12px;line-height:1.7}
-  .meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
-  .price{font-weight:900;color:var(--gold2)}
-  .mini{font-size:12px;color:var(--muted)}
-  .toast{position:fixed;left:16px;right:16px;bottom:16px;max-width:1100px;margin:0 auto;
-    background:rgba(0,0,0,.78);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:12px 14px;
-    display:flex;align-items:center;justify-content:space-between;gap:10px;opacity:0;transform:translateY(14px);
-    pointer-events:none;transition:.22s ease;z-index:50}
-  .toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
-</style>
-</head>
-<body>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LUNEVIRA — متجر متكامل</title>
 
-<div class="top">
-  <div class="nav wrap">
-    <div class="brand">
-      <div class="logo">✨</div>
-      <div>
-        <h1>LUNEVIRA</h1>
-        <p>تسجيل بالإيميل • متجر • إعادة بيع • طلبات</p>
+  <style>
+    :root{
+      --bg:#0b0f1a;
+      --card:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.14);
+      --text:#f5f7ff;
+      --muted:rgba(245,247,255,.72);
+      --gold:#d4af37;
+      --gold2:#f1d37a;
+      --ok:#22c55e;
+      --bad:#ef4444;
+      --r:18px;
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(900px 600px at 80% -10%, rgba(212,175,55,.22), transparent 55%),
+        radial-gradient(700px 500px at 10% 10%, rgba(124,58,237,.18), transparent 60%),
+        linear-gradient(180deg,#070a12,var(--bg));
+      min-height:100vh;
+    }
+    .wrap{width:min(1100px,100%);margin:0 auto;padding:16px}
+    .top{
+      position:sticky;top:0;z-index:10;
+      background:rgba(7,10,18,.78);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:42px;height:42px;border-radius:14px;border:1px solid var(--line);
+      background:linear-gradient(135deg,rgba(212,175,55,.22),rgba(255,255,255,.06));
+      display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35);
+      user-select:none;
+    }
+    .brand h1{margin:0;font-size:16px;letter-spacing:1px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    .right{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 12px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      cursor:pointer;font-size:12px;user-select:none;
+    }
+    .pill:active{transform:translateY(1px)}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .card{grid-column:span 6;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:var(--r);box-shadow:var(--shadow)}
+    @media (max-width:900px){ .card{grid-column:span 12} }
+    .panel{padding:14px}
+    .h{margin:0 0 8px;font-size:16px}
+    .muted{color:var(--muted);font-size:13px;line-height:1.7}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:900px){ .row{grid-template-columns:1fr} }
+    input,select,textarea{
+      width:100%;padding:12px;border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);outline:none;
+      font-size:14px;
+    }
+    textarea{min-height:90px;resize:vertical}
+    .btn{
+      border:0;border-radius:14px;padding:12px 14px;
+      cursor:pointer;font-weight:900;
+    }
+    .btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#071018}
+    .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+    .btn.ok{background:linear-gradient(135deg,#34d399,var(--ok));color:#06130b}
+    .btn.bad{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.35);color:#ffd7d7}
+    .sep{height:1px;background:var(--line);margin:12px 0}
+
+    .items{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .item{
+      grid-column:span 4;border:1px solid var(--line);
+      background:rgba(255,255,255,.05);
+      border-radius:16px;overflow:hidden;
+      display:flex;flex-direction:column;
+    }
+    @media (max-width:980px){ .item{grid-column:span 6} }
+    @media (max-width:560px){ .item{grid-column:span 12} }
+
+    .thumb{
+      height:150px;position:relative;overflow:hidden;
+      background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+      border-bottom:1px solid var(--line);
+    }
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .tag{
+      position:absolute;top:10px;right:10px;z-index:2;
+      font-size:12px;padding:6px 10px;border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.28);
+      backdrop-filter:blur(8px);
+    }
+    .body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
+    .title{margin:0;font-size:14px}
+    .desc{margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+    .meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
+    .price{font-weight:900;color:var(--gold2)}
+    .mini{font-size:12px;color:var(--muted)}
+    .toast{
+      position:fixed;left:16px;right:16px;bottom:16px;max-width:1100px;margin:0 auto;
+      background:rgba(0,0,0,.82);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:16px;
+      padding:12px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      opacity:0;transform:translateY(14px);pointer-events:none;
+      transition:.22s ease;z-index:50;
+    }
+    .toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+    /* Debug bar */
+    #statusBar{
+      position:fixed;top:10px;left:10px;right:10px;z-index:99999;
+      background:rgba(0,0,0,.75);
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:14px;
+      padding:10px 12px;
+      font:13px/1.6 Arial;
+      display:none;
+    }
+    #statusBar.show{display:block}
+    #statusBar b{color:#fff}
+  </style>
+
+  <!-- Supabase Library (أقوى من jsdelivr على بعض الشبكات) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2" defer></script>
+</head>
+
+<body>
+  <div id="statusBar"></div>
+
+  <div class="top">
+    <div class="nav wrap">
+      <div class="brand">
+        <div class="logo">✨</div>
+        <div>
+          <h1>LUNEVIRA</h1>
+          <p>تسجيل بالإيميل • متجر • إعادة بيع • طلبات</p>
+        </div>
       </div>
-    </div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
-      <div class="pill" id="who">غير مسجّل</div>
-      <div class="pill" id="btnCart">🛒 السلة (<span id="cartCount">0</span>)</div>
-      <div class="pill" id="btnLogout" style="display:none">🚪 خروج</div>
+      <div class="right">
+        <div class="pill" id="who">غير مسجّل</div>
+        <div class="pill" id="btnCart">🛒 السلة (<span id="cartCount">0</span>)</div>
+        <div class="pill" id="btnLogout" style="display:none">🚪 خروج</div>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="wrap">
-  <div class="grid" style="gap:12px">
-    <!-- Auth -->
-    <section class="card" style="grid-column:span 5">
-      <div class="panel">
-        <h2 class="h">الحساب</h2>
-        <p class="muted">سجّل بالإيميل (تسجيل/دخول). بعد الدخول تقدر تعمل طلبات وتضيف منتجات لإعادة البيع.</p>
-        <div class="sep"></div>
+  <div class="wrap">
+    <div class="grid">
 
-        <div id="authBox">
-          <div class="row">
-            <div>
-              <div class="mini">الإيميل</div>
-              <input id="email" type="email" placeholder="name@example.com">
-            </div>
-            <div>
-              <div class="mini">كلمة المرور</div>
-              <input id="password" type="password" placeholder="••••••••">
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
-            <button class="btn gold" id="btnSignUp">تسجيل جديد</button>
-            <button class="btn ghost" id="btnSignIn">دخول</button>
-          </div>
-          <p class="mini" style="margin-top:10px">
-            إذا Supabase مفعّل “Email confirmation” ممكن يطلب تأكيد من البريد.
-          </p>
-        </div>
-
-        <div id="userBox" style="display:none">
-          <p class="muted">✅ أنت مسجّل دخول.</p>
+      <!-- الحساب -->
+      <section class="card">
+        <div class="panel">
+          <h2 class="h">الحساب</h2>
+          <p class="muted">سجّل بالإيميل. بعد الدخول تقدر تعمل طلبات وتضيف منتجات لإعادة البيع.</p>
           <div class="sep"></div>
 
-          <h3 class="h">إنشاء طلب</h3>
-          <div class="row">
-            <input id="fullName" placeholder="الاسم الكامل">
-            <input id="phone" placeholder="الهاتف">
+          <div id="authBox">
+            <div class="row">
+              <div>
+                <div class="mini">الإيميل</div>
+                <input id="email" type="email" placeholder="name@example.com">
+              </div>
+              <div>
+                <div class="mini">كلمة المرور</div>
+                <input id="password" type="password" placeholder="••••••••">
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn gold" id="btnSignUp">تسجيل جديد</button>
+              <button class="btn ghost" id="btnSignIn">دخول</button>
+            </div>
+
+            <p class="mini" style="margin-top:10px">
+              اكتب إيميل صحيح مثل: <b>test@gmail.com</b> (مش “gmail.com” وحدها).
+            </p>
           </div>
-          <textarea id="address" placeholder="العنوان الكامل"></textarea>
-          <button class="btn ok" id="btnCheckout" style="margin-top:10px">تأكيد الطلب (يسجّل في قاعدة البيانات)</button>
-          <p class="mini">⚠️ هذا ليس دفع إلكتروني، لكنه يسجّل “الطلب” في قاعدة البيانات لتتابعه لاحقًا.</p>
-        </div>
-      </div>
-    </section>
 
-    <!-- Store -->
-    <section class="card" style="grid-column:span 7">
-      <div class="panel">
-        <h2 class="h">المنتجات</h2>
-        <div class="row">
-          <input id="search" placeholder="بحث... (عطر / نظارات)">
-          <select id="filterCat">
-            <option value="all">الكل</option>
-            <option value="perfume">عطور</option>
-            <option value="glasses">نظارات</option>
-            <option value="resale">إعادة بيع</option>
-          </select>
-        </div>
-        <div class="sep"></div>
-        <div id="list" class="items"></div>
-      </div>
-    </section>
+          <div id="userBox" style="display:none">
+            <p class="muted">✅ أنت مسجّل دخول.</p>
+            <div class="sep"></div>
 
-    <!-- Seller / Resale -->
-    <section class="card" style="grid-column:span 12">
-      <div class="panel">
-        <h2 class="h">إعادة بيع (لوحة البائع)</h2>
-        <p class="muted">بعد تسجيل الدخول، يمكنك إضافة منتجك ليظهر ضمن “إعادة بيع”.</p>
-        <div class="sep"></div>
+            <h3 class="h">إنشاء طلب</h3>
+            <div class="row">
+              <input id="fullName" placeholder="الاسم الكامل">
+              <input id="phone" placeholder="الهاتف">
+            </div>
+            <textarea id="address" placeholder="العنوان الكامل"></textarea>
 
-        <div id="sellerBox" style="display:none">
-          <div class="row">
-            <input id="sTitle" placeholder="اسم المنتج">
-            <input id="sPrice" type="number" placeholder="السعر (مثال 120)">
+            <button class="btn ok" id="btnCheckout" style="margin-top:10px">تأكيد الطلب (يسجّل في Supabase)</button>
+            <p class="mini">هذا ليس دفع إلكتروني. هو تسجيل الطلب فقط لمتابعته.</p>
           </div>
+        </div>
+      </section>
+
+      <!-- المنتجات -->
+      <section class="card">
+        <div class="panel">
+          <h2 class="h">المنتجات</h2>
           <div class="row">
-            <select id="sCat">
+            <input id="search" placeholder="بحث... (عطر / نظارات)">
+            <select id="filterCat">
+              <option value="all">الكل</option>
               <option value="perfume">عطور</option>
               <option value="glasses">نظارات</option>
+              <option value="resale">إعادة بيع</option>
             </select>
-            <input id="sImg" placeholder="رابط صورة (اختياري)">
           </div>
-          <textarea id="sDesc" placeholder="وصف المنتج"></textarea>
-          <button class="btn gold" id="btnAddListing">إضافة منتج لإعادة البيع</button>
           <div class="sep"></div>
-          <h3 class="h">منتجاتي</h3>
-          <div id="myListings" class="items"></div>
+          <div id="list" class="items"></div>
         </div>
+      </section>
 
-        <div id="sellerLock" class="muted">🔒 لازم تسجّل دخول أولاً لتستعمل لوحة البائع.</div>
-      </div>
-    </section>
+      <!-- إعادة بيع -->
+      <section class="card" style="grid-column:span 12">
+        <div class="panel">
+          <h2 class="h">إعادة بيع (لوحة البائع)</h2>
+          <p class="muted">بعد تسجيل الدخول، أضف منتجك وسيظهر للناس ضمن “إعادة بيع”.</p>
+          <div class="sep"></div>
+
+          <div id="sellerLock" class="muted">🔒 لازم تسجّل دخول أولاً.</div>
+
+          <div id="sellerBox" style="display:none">
+            <div class="row">
+              <input id="sTitle" placeholder="اسم المنتج">
+              <input id="sPrice" type="number" placeholder="السعر (مثال 120)">
+            </div>
+            <div class="row">
+              <select id="sCat">
+                <option value="perfume">عطور</option>
+                <option value="glasses">نظارات</option>
+              </select>
+              <input id="sImg" placeholder="رابط صورة (اختياري)">
+            </div>
+            <textarea id="sDesc" placeholder="وصف المنتج"></textarea>
+
+            <button class="btn gold" id="btnAddListing">إضافة منتج لإعادة البيع</button>
+
+            <div class="sep"></div>
+            <h3 class="h">منتجاتي</h3>
+            <div id="myListings" class="items"></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
   </div>
-</div>
 
-<div class="toast" id="toast">
-  <div id="toastMsg">—</div>
-  <button class="btn ghost" id="toastOk">حسنًا</button>
-</div>
+  <div class="toast" id="toast">
+    <div id="toastMsg">—</div>
+    <button class="btn ghost" id="toastOk">حسنًا</button>
+  </div>
 
-<!-- Supabase JS (CDN) -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-/* ====== ضع بيانات مشروعك هنا (من Supabase > Settings > API) ====== */
+/* =========================
+   Supabase Config (جاهز)
+   ========================= */
 const SUPABASE_URL = "https://muowobprjsaiqxlcrtav.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11b3dvYnByanNhaXF4bGNydGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2Mjc4MDEsImV4cCI6MjA4NjIwMzgwMX0.KTK4yPFO-GZHSDG41JBq1H4kHO17iR7pr9lRU4crbfE";
-/* =============================================================== */
 
-const $ = (id) => document.getElementById(id);
+const $ = (id)=> document.getElementById(id);
+
+function showStatus(msg, isError=false){
+  const bar = $("statusBar");
+  bar.classList.add("show");
+  bar.innerHTML = (isError ? "❌ " : "✅ ") + msg;
+}
 
 function toast(msg){
   $("toastMsg").textContent = msg;
@@ -206,272 +289,257 @@ function toast(msg){
 }
 $("toastOk").onclick = ()=> $("toast").classList.remove("show");
 
-if(!SUPABASE_URL.startsWith("http") || SUPABASE_ANON_KEY.includes("PASTE_")){
-  toast("⚠️ لازم تلصق SUPABASE_URL و SUPABASE_ANON_KEY داخل الكود.");
-}
+/* =========================
+   Start AFTER DOM + Supabase loaded
+   ========================= */
+document.addEventListener("DOMContentLoaded", async ()=>{
+  // Wait a moment for defer script
+  await new Promise(r=>setTimeout(r, 30));
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  if(!window.supabase){
+    showStatus("مكتبة Supabase لم تُحمّل. جرّب إعادة فتح الصفحة أو بدّل الشبكة.", true);
+    return;
+  }
+  showStatus("Supabase library loaded. جاري الاتصال…");
 
-let sessionUser = null;
-let cart = []; // {type:'product'|'listing', id, title, unit_price, qty}
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-function cartCount(){
-  let c=0; cart.forEach(i=>c+=i.qty);
-  $("cartCount").textContent = c;
-  return c;
-}
+  // Global error catcher (يطلع أي خطأ بدل الصمت)
+  window.addEventListener("error", (e)=> showStatus("JS Error: " + (e.message||e.error||e), true));
+  window.addEventListener("unhandledrejection", (e)=> showStatus("Promise Error: " + (e.reason?.message||e.reason||e), true));
 
-function addToCart(item){
-  const key = item.type + ":" + item.id;
-  const idx = cart.findIndex(x => (x.type+":"+x.id) === key);
-  if(idx>=0) cart[idx].qty += 1;
-  else cart.push({...item, qty:1});
-  cartCount();
-  toast("تمت الإضافة للسلة ✅");
-}
+  let sessionUser = null;
+  let cart = []; // {type,id,title,unit_price,qty}
 
-function renderCartAlert(){
-  if(cart.length===0){ alert("السلة فارغة"); return; }
-  let lines = cart.map(i=>`- ${i.title} × ${i.qty} = ${Number(i.unit_price)*i.qty}`);
-  let total = cart.reduce((s,i)=> s + Number(i.unit_price)*i.qty, 0);
-  alert("السلة:\n"+lines.join("\n")+"\n\nالإجمالي: "+total);
-}
+  function cartCount(){
+    let c=0; cart.forEach(i=>c+=i.qty);
+    $("cartCount").textContent = c;
+  }
 
-$("btnCart").onclick = renderCartAlert;
+  function addToCart(item){
+    const key = item.type+":"+item.id;
+    const idx = cart.findIndex(x => (x.type+":"+x.id)===key);
+    if(idx>=0) cart[idx].qty += 1;
+    else cart.push({...item, qty:1});
+    cartCount();
+    toast("تمت الإضافة للسلة ✅");
+  }
 
-function imgOrFallback(url){
-  if(url && url.trim()) return url.trim();
-  // fallback internal svg
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600'>
-    <defs>
-      <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
-        <stop offset='0' stop-color='#0b0f1a'/><stop offset='1' stop-color='#20162f'/>
-      </linearGradient>
-    </defs>
-    <rect width='900' height='600' fill='url(#g)'/>
-    <circle cx='220' cy='220' r='140' fill='rgba(212,175,55,.22)'/>
-    <circle cx='680' cy='380' r='170' fill='rgba(124,58,237,.18)'/>
-    <text x='60' y='520' fill='rgba(255,255,255,.75)' font-family='Arial' font-size='44'>LUNEVIRA</text>
-  </svg>`;
-  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-}
+  $("btnCart").onclick = ()=>{
+    if(cart.length===0){ alert("السلة فارغة"); return; }
+    const lines = cart.map(i=>`- ${i.title} × ${i.qty} = ${Number(i.unit_price)*i.qty} دينار`);
+    const total = cart.reduce((s,i)=> s + Number(i.unit_price)*i.qty, 0);
+    alert("السلة:\n"+lines.join("\n")+"\n\nالإجمالي: "+total+" دينار");
+  };
 
-function cardHTML(p){
-  const tag = p.type === "listing" ? "إعادة بيع" : (p.category==="glasses" ? "نظارات" : "عطر");
-  return `
-    <div class="item">
-      <div class="thumb">
-        <span class="tag">${tag}</span>
-        <img alt="" src="${imgOrFallback(p.image_url)}">
-      </div>
-      <div class="body">
-        <h3 class="title">${p.title}</h3>
-        <p class="desc">${p.description || "—"}</p>
-        <div class="meta">
-          <div class="price">${Number(p.price).toFixed(0)} دينار</div>
-          <div style="display:flex;gap:8px">
-            <button class="btn ghost" onclick="viewItem('${p.type}','${p.id}')">تفاصيل</button>
-            <button class="btn gold" onclick="addItem('${p.type}','${p.id}','${escapeHtml(p.title)}','${p.price}')">أضف للسلة</button>
+  function imgOrFallback(url){
+    if(url && url.trim()) return url.trim();
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600'>
+      <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0' stop-color='#0b0f1a'/><stop offset='1' stop-color='#20162f'/>
+      </linearGradient></defs>
+      <rect width='900' height='600' fill='url(#g)'/>
+      <circle cx='220' cy='220' r='140' fill='rgba(212,175,55,.22)'/>
+      <circle cx='680' cy='380' r='170' fill='rgba(124,58,237,.18)'/>
+      <text x='60' y='520' fill='rgba(255,255,255,.75)' font-family='Arial' font-size='44'>LUNEVIRA</text>
+    </svg>`;
+    return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+  }
+
+  function esc(s){
+    return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function cardHTML(p){
+    const tag = p.type==="listing" ? "إعادة بيع" : (p.category==="glasses" ? "نظارات" : "عطر");
+    return `
+      <div class="item">
+        <div class="thumb">
+          <span class="tag">${tag}</span>
+          <img alt="" src="${imgOrFallback(p.image_url)}">
+        </div>
+        <div class="body">
+          <h3 class="title">${esc(p.title)}</h3>
+          <p class="desc">${esc(p.description || "—")}</p>
+          <div class="meta">
+            <div class="price">${Number(p.price).toFixed(0)} دينار</div>
+            <button class="btn gold" data-add="${p.type}:${p.id}">أضف للسلة</button>
           </div>
         </div>
       </div>
-    </div>
-  `;
-}
-
-function escapeHtml(s){
-  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-
-window.viewItem = (type,id)=> toast(`المنتج: ${type} / ${id}`);
-window.addItem = (type,id,title,price)=> addToCart({type, id, title, unit_price:Number(price)});
-
-async function loadStore(){
-  const q = ($("search").value||"").trim().toLowerCase();
-  const f = $("filterCat").value;
-
-  // 1) products
-  let prods = [];
-  if(f !== "resale"){
-    const {data, error} = await supabase.from("products").select("*").order("created_at",{ascending:false});
-    if(error) { toast("خطأ تحميل products: "+error.message); }
-    else prods = (data||[]).map(x=>({...x, type:"product"}));
+    `;
   }
 
-  // 2) listings (resale)
-  let lists = [];
-  if(f !== "all" ? (f==="resale") : true){
-    const {data, error} = await supabase.from("listings").select("*").order("created_at",{ascending:false});
-    if(error) { toast("خطأ تحميل listings: "+error.message); }
-    else lists = (data||[]).map(x=>({...x, type:"listing"}));
+  async function loadStore(){
+    const q = ($("search").value||"").trim().toLowerCase();
+    const f = $("filterCat").value;
+
+    let all = [];
+
+    // Products
+    if(f !== "resale"){
+      const {data, error} = await supabase.from("products").select("*").order("created_at",{ascending:false});
+      if(error){
+        showStatus("Products error: "+error.message, true);
+      } else {
+        all.push(...(data||[]).map(x=>({...x, type:"product"})));
+      }
+    }
+
+    // Listings (Resale)
+    if(f === "resale" || f === "all"){
+      const {data, error} = await supabase.from("listings").select("*").order("created_at",{ascending:false});
+      if(error){
+        showStatus("Listings error: "+error.message, true);
+      } else {
+        all.push(...(data||[]).map(x=>({...x, type:"listing"})));
+      }
+    }
+
+    // Filter
+    if(f==="perfume") all = all.filter(x=> (x.category||"perfume")==="perfume" && x.type!=="listing");
+    if(f==="glasses") all = all.filter(x=> (x.category||"perfume")==="glasses" && x.type!=="listing");
+    if(f==="resale") all = all.filter(x=> x.type==="listing");
+
+    if(q) all = all.filter(x =>
+      (x.title||"").toLowerCase().includes(q) ||
+      (x.description||"").toLowerCase().includes(q)
+    );
+
+    $("list").innerHTML = all.length ? all.map(cardHTML).join("") : `<div class="muted">لا توجد نتائج.</div>`;
+
+    // bind add buttons
+    document.querySelectorAll("[data-add]").forEach(btn=>{
+      btn.onclick = ()=>{
+        const [type, id] = btn.getAttribute("data-add").split(":");
+        const p = all.find(x=>x.type===type && x.id===id);
+        if(!p) return;
+        addToCart({type, id, title:p.title, unit_price:Number(p.price)});
+      };
+    });
+
+    showStatus("تم تحميل البيانات ✅");
   }
 
-  let all = [...prods, ...lists];
+  async function refreshSession(){
+    const {data, error} = await supabase.auth.getSession();
+    if(error){
+      showStatus("Session error: "+error.message, true);
+    }
+    sessionUser = data.session?.user || null;
 
-  if(f==="perfume") all = all.filter(x=>x.type==="product" ? x.category==="perfume" : x.category==="perfume");
-  if(f==="glasses") all = all.filter(x=>x.type==="product" ? x.category==="glasses" : x.category==="glasses");
-  if(f==="resale") all = all.filter(x=>x.type==="listing");
-
-  if(q) all = all.filter(x => (x.title||"").toLowerCase().includes(q) || (x.description||"").toLowerCase().includes(q));
-
-  $("list").innerHTML = all.length ? all.map(cardHTML).join("") : `<div class="muted">لا توجد نتائج.</div>`;
-}
-
-$("search").addEventListener("input", ()=>{ clearTimeout(window.__s); window.__s=setTimeout(loadStore,200); });
-$("filterCat").addEventListener("change", loadStore);
-
-async function refreshSession(){
-  const {data} = await supabase.auth.getSession();
-  sessionUser = data.session?.user || null;
-
-  if(sessionUser){
-    $("who").textContent = sessionUser.email;
-    $("btnLogout").style.display = "";
-    $("authBox").style.display = "none";
-    $("userBox").style.display = "";
-    $("sellerBox").style.display = "";
-    $("sellerLock").style.display = "none";
-    await loadMyListings();
-  }else{
-    $("who").textContent = "غير مسجّل";
-    $("btnLogout").style.display = "none";
-    $("authBox").style.display = "";
-    $("userBox").style.display = "none";
-    $("sellerBox").style.display = "none";
-    $("sellerLock").style.display = "";
+    if(sessionUser){
+      $("who").textContent = sessionUser.email;
+      $("btnLogout").style.display = "";
+      $("authBox").style.display = "none";
+      $("userBox").style.display = "";
+      $("sellerLock").style.display = "none";
+      $("sellerBox").style.display = "";
+      await loadMyListings();
+    } else {
+      $("who").textContent = "غير مسجّل";
+      $("btnLogout").style.display = "none";
+      $("authBox").style.display = "";
+      $("userBox").style.display = "none";
+      $("sellerLock").style.display = "";
+      $("sellerBox").style.display = "none";
+    }
   }
-}
 
-$("btnLogout").onclick = async ()=>{
-  await supabase.auth.signOut();
-  cart = []; cartCount();
-  toast("تم تسجيل الخروج");
-  refreshSession();
-};
+  $("btnLogout").onclick = async ()=>{
+    await supabase.auth.signOut();
+    cart = []; cartCount();
+    toast("تم تسجيل الخروج");
+    refreshSession();
+  };
 
-$("btnSignUp").onclick = async ()=>{
-  const email = $("email").value.trim();
-  const password = $("password").value;
-  if(!email || !password){ toast("اكتب الإيميل وكلمة المرور"); return; }
-  const {error} = await supabase.auth.signUp({ email, password });
-  if(error) toast(error.message);
-  else toast("تم التسجيل. قد تحتاج تأكيد البريد حسب إعدادات Supabase.");
-  refreshSession();
-};
+  $("btnSignUp").onclick = async ()=>{
+    try{
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      if(!email.includes("@")) { toast("اكتب إيميل صحيح"); return; }
+      if((password||"").length < 8){ toast("كلمة المرور 8 أحرف أو أكثر"); return; }
 
-$("btnSignIn").onclick = async ()=>{
-  const email = $("email").value.trim();
-  const password = $("password").value;
-  if(!email || !password){ toast("اكتب الإيميل وكلمة المرور"); return; }
-  const {error} = await supabase.auth.signInWithPassword({ email, password });
-  if(error) toast(error.message);
-  else toast("تم تسجيل الدخول ✅");
-  refreshSession();
-};
+      const {error} = await supabase.auth.signUp({ email, password });
+      if(error) { showStatus("SignUp: "+error.message, true); toast(error.message); return; }
+      toast("تم التسجيل ✅ (قد تحتاج تأكيد البريد حسب إعدادات Supabase)");
+      refreshSession();
+    }catch(e){
+      showStatus("SignUp crash: "+(e.message||e), true);
+    }
+  };
 
-$("btnCheckout").onclick = async ()=>{
-  if(!sessionUser){ toast("لازم تسجّل دخول"); return; }
-  if(cart.length===0){ toast("السلة فارغة"); return; }
+  $("btnSignIn").onclick = async ()=>{
+    try{
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      if(!email.includes("@")) { toast("اكتب إيميل صحيح"); return; }
+      const {error} = await supabase.auth.signInWithPassword({ email, password });
+      if(error) { showStatus("SignIn: "+error.message, true); toast(error.message); return; }
+      toast("تم تسجيل الدخول ✅");
+      refreshSession();
+    }catch(e){
+      showStatus("SignIn crash: "+(e.message||e), true);
+    }
+  };
 
-  const full_name = $("fullName").value.trim();
-  const phone = $("phone").value.trim();
-  const address = $("address").value.trim();
-  if(!full_name || !phone || !address){ toast("املأ الاسم والهاتف والعنوان"); return; }
+  $("btnCheckout").onclick = async ()=>{
+    try{
+      if(!sessionUser){ toast("لازم تسجّل دخول"); return; }
+      if(cart.length===0){ toast("السلة فارغة"); return; }
 
-  const total = cart.reduce((s,i)=> s + Number(i.unit_price)*i.qty, 0);
+      const full_name = $("fullName").value.trim();
+      const phone = $("phone").value.trim();
+      const address = $("address").value.trim();
+      if(!full_name || !phone || !address){ toast("املأ الاسم والهاتف والعنوان"); return; }
 
-  const {data:order, error:err1} = await supabase
-    .from("orders")
-    .insert([{ user_id: sessionUser.id, full_name, phone, address, total }])
-    .select()
-    .single();
+      const total = cart.reduce((s,i)=> s + Number(i.unit_price)*i.qty, 0);
 
-  if(err1){ toast("خطأ إنشاء الطلب: "+err1.message); return; }
+      const {data:order, error:err1} = await supabase
+        .from("orders")
+        .insert([{ user_id: sessionUser.id, full_name, phone, address, total }])
+        .select().single();
 
-  const items = cart.map(i=>({
-    order_id: order.id,
-    item_type: i.type,
-    item_id: i.id,
-    title: i.title,
-    unit_price: Number(i.unit_price),
-    qty: i.qty
-  }));
+      if(err1){ showStatus("Order insert: "+err1.message, true); toast(err1.message); return; }
 
-  const {error:err2} = await supabase.from("order_items").insert(items);
-  if(err2){ toast("تم إنشاء الطلب لكن خطأ في العناصر: "+err2.message); return; }
+      const items = cart.map(i=>({
+        order_id: order.id,
+        item_type: i.type,
+        item_id: i.id,
+        title: i.title,
+        unit_price: Number(i.unit_price),
+        qty: i.qty
+      }));
 
-  cart = []; cartCount();
-  toast("✅ تم تسجيل الطلب بنجاح");
-};
+      const {error:err2} = await supabase.from("order_items").insert(items);
+      if(err2){ showStatus("Order items: "+err2.message, true); toast(err2.message); return; }
 
-$("btnAddListing").onclick = async ()=>{
-  if(!sessionUser){ toast("لازم تسجّل دخول"); return; }
+      cart = []; cartCount();
+      toast("✅ تم تسجيل الطلب بنجاح");
+      showStatus("تم إنشاء الطلب ✅");
+    }catch(e){
+      showStatus("Checkout crash: "+(e.message||e), true);
+    }
+  };
 
-  const title = $("sTitle").value.trim();
-  const price = Number($("sPrice").value);
-  const category = $("sCat").value;
-  const image_url = $("sImg").value.trim();
-  const description = $("sDesc").value.trim();
+  $("btnAddListing").onclick = async ()=>{
+    try{
+      if(!sessionUser){ toast("لازم تسجّل دخول"); return; }
+      const title = $("sTitle").value.trim();
+      const price = Number($("sPrice").value);
+      const category = $("sCat").value;
+      const image_url = $("sImg").value.trim();
+      const description = $("sDesc").value.trim();
 
-  if(!title || !Number.isFinite(price) || price<=0){ toast("اكتب اسم وسعر صحيح"); return; }
+      if(!title){ toast("اكتب اسم المنتج"); return; }
+      if(!Number.isFinite(price) || price<=0){ toast("اكتب سعر صحيح"); return; }
 
-  const {error} = await supabase.from("listings").insert([{
-    seller_id: sessionUser.id, title, price, category, image_url, description, status:"active"
-  }]);
+      const {error} = await supabase.from("listings").insert([{
+        seller_id: sessionUser.id,
+        title, description, price, category, image_url,
+        status:"active"
+      }]);
 
-  if(error) toast("خطأ إضافة المنتج: "+error.message);
-  else {
-    toast("تمت إضافة منتجك لإعادة البيع ✅");
-    $("sTitle").value=""; $("sPrice").value=""; $("sImg").value=""; $("sDesc").value="";
-    await loadMyListings();
-    await loadStore();
-  }
-};
+      if(error){ showStatus("Add listing: "+error.message, true); toast(error.message); return; }
 
-async function loadMyListings(){
-  if(!sessionUser) return;
-  const {data, error} = await supabase
-    .from("listings")
-    .select("*")
-    .eq("seller_id", sessionUser.id)
-    .order("created_at",{ascending:false});
-
-  if(error){ toast("خطأ تحميل منتجاتي: "+error.message); return; }
-
-  const mine = (data||[]).map(x=>({...x, type:"listing"}));
-  $("myListings").innerHTML = mine.length ? mine.map(p=>`
-    <div class="item">
-      <div class="thumb">
-        <span class="tag">منتجي</span>
-        <img alt="" src="${imgOrFallback(p.image_url)}">
-      </div>
-      <div class="body">
-        <h3 class="title">${p.title}</h3>
-        <p class="desc">${p.description || "—"}</p>
-        <div class="meta">
-          <div class="price">${Number(p.price).toFixed(0)} دينار</div>
-          <button class="btn bad" onclick="delListing('${p.id}')">حذف</button>
-        </div>
-      </div>
-    </div>
-  `).join("") : `<div class="muted">لا توجد منتجات بعد.</div>`;
-}
-
-window.delListing = async (id)=>{
-  if(!sessionUser) return;
-  const ok = confirm("حذف المنتج؟");
-  if(!ok) return;
-  const {error} = await supabase.from("listings").delete().eq("id", id);
-  if(error) toast("خطأ الحذف: "+error.message);
-  else { toast("تم الحذف"); loadMyListings(); loadStore(); }
-};
-
-supabase.auth.onAuthStateChange(()=> refreshSession());
-
-// First load
-refreshSession();
-loadStore();
-cartCount();
-</script>
-</body>
-</html>
+      toast("تمت إضافة المنتج
