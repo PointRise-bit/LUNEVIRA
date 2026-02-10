@@ -3,96 +3,341 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LUNEVIRA — Auth Fix</title>
-
-  <!-- مهم: defer حتى يتأكد التحميل -->
+  <title>LUNEVIRA — Marketplace</title>
   <script src="https://unpkg.com/@supabase/supabase-js@2" defer></script>
-
   <style>
-    body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff;padding:16px}
-    .card{max-width:520px;margin:18px auto;border:1px solid rgba(255,255,255,.15);
-      background:rgba(255,255,255,.06);border-radius:18px;padding:16px}
-    input{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.15);
-      background:rgba(255,255,255,.06);color:#fff;outline:none;margin-top:10px}
-    button{padding:12px 14px;border-radius:14px;border:0;font-weight:900;cursor:pointer;margin-top:10px}
-    .gold{background:linear-gradient(135deg,#f1d37a,#d4af37);color:#061018}
-    .ghost{background:transparent;border:1px solid rgba(255,255,255,.15);color:#fff}
-    .log{margin-top:12px;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.15);
-      background:rgba(0,0,0,.35);white-space:pre-wrap;line-height:1.7}
+    :root{--bg:#0b0f1a;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.16);--muted:rgba(255,255,255,.75);
+      --gold:#d4af37;--gold2:#f1d37a;--ok:#22c55e;--bad:#ef4444;--r:18px}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial;background:var(--bg);color:#fff}
+    .wrap{max-width:1100px;margin:0 auto;padding:14px}
+    .top{position:sticky;top:0;z-index:10;background:rgba(11,15,26,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .logo{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);display:grid;place-items:center;background:linear-gradient(135deg,rgba(241,211,122,.2),rgba(255,255,255,.05))}
+    .brand h1{margin:0;font-size:16px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+    .pill{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:10px 12px;font-size:12px;cursor:pointer;user-select:none}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}
+    .card{grid-column:span 6;border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:14px}
+    @media(max-width:900px){.card{grid-column:span 12}}
+    .h{margin:0 0 8px;font-size:16px}
+    .muted{color:var(--muted);font-size:13px;line-height:1.7}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:900px){.row{grid-template-columns:1fr}}
+    input,select,textarea{width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;outline:none}
+    textarea{min-height:90px;resize:vertical}
+    .btn{border:0;border-radius:14px;padding:12px 14px;font-weight:900;cursor:pointer}
+    .gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#081018}
+    .ghost{background:transparent;border:1px solid var(--line);color:#fff}
+    .ok{background:linear-gradient(135deg,#34d399,var(--ok));color:#06130b}
+    .bad{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.35);color:#ffd7d7}
+    .sep{height:1px;background:var(--line);margin:12px 0}
+    .items{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .item{grid-column:span 4;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+    @media(max-width:980px){.item{grid-column:span 6}}
+    @media(max-width:560px){.item{grid-column:span 12}}
+    .thumb{height:150px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .tag{position:absolute;top:10px;right:10px;border:1px solid var(--line);background:rgba(0,0,0,.35);padding:6px 10px;border-radius:999px;font-size:12px}
+    .body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
+    .title{margin:0;font-size:14px}
+    .desc{margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+    .meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto}
+    .price{font-weight:900;color:var(--gold2)}
+    #bar{position:fixed;top:10px;left:10px;right:10px;z-index:99999;display:none;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.75);font:13px/1.6 Arial}
+    #bar.show{display:block}
   </style>
 </head>
-
 <body>
-  <div class="card">
-    <h2 style="margin:0 0 8px">تسجيل / دخول</h2>
+<div id="bar"></div>
 
-    <input id="email" type="email" placeholder="test123@gmail.com">
-    <input id="pass" type="password" placeholder="12345678">
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="gold" id="signup">تسجيل</button>
-      <button class="ghost" id="signin">دخول</button>
-      <button class="ghost" id="logout" style="display:none">خروج</button>
+<div class="top">
+  <div class="nav wrap">
+    <div class="brand">
+      <div class="logo">✨</div>
+      <div>
+        <h1>LUNEVIRA</h1>
+        <p>Marketplace — عمولة 8% — USDT TRC20/BEP20</p>
+      </div>
     </div>
-
-    <div class="log" id="log">جاهز…</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center">
+      <div class="pill" id="who">غير مسجل</div>
+      <div class="pill" id="cartBtn">🛒 السلة (<span id="cartCount">0</span>)</div>
+      <div class="pill" id="logoutBtn" style="display:none">🚪 خروج</div>
+    </div>
   </div>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+
+    <section class="card">
+      <h2 class="h">الحساب</h2>
+      <p class="muted">سجّل بالإيميل. بعد الدخول تقدر تضيف منتجات وتعمل طلبات.</p>
+      <div class="sep"></div>
+
+      <div id="authBox">
+        <div class="row">
+          <input id="email" placeholder="name@example.com">
+          <input id="pass" type="password" placeholder="كلمة المرور (8+)" />
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn gold" id="signupBtn">تسجيل جديد</button>
+          <button class="btn ghost" id="signinBtn">دخول</button>
+        </div>
+        <div class="muted" style="margin-top:10px">إذا ظهر خطأ هنا، ارسله لي.</div>
+      </div>
+
+      <div id="userBox" style="display:none">
+        <div class="muted">✅ أنت داخل.</div>
+        <div class="sep"></div>
+        <h3 class="h">معلومات الشحن</h3>
+        <div class="row">
+          <input id="shipName" placeholder="الاسم الكامل">
+          <input id="shipPhone" placeholder="الهاتف">
+        </div>
+        <textarea id="shipAddress" placeholder="العنوان الكامل"></textarea>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="h">المنتجات</h2>
+      <div class="row">
+        <input id="search" placeholder="بحث (عطر / نظارات)">
+        <select id="cat">
+          <option value="all">الكل</option>
+          <option value="perfume">عطور</option>
+          <option value="glasses">نظارات</option>
+        </select>
+      </div>
+      <div class="sep"></div>
+      <div id="list" class="items"></div>
+    </section>
+
+    <section class="card" style="grid-column:span 12">
+      <h2 class="h">لوحة البائع</h2>
+      <p class="muted">أضف منتجاتك لإعادة البيع.</p>
+      <div class="sep"></div>
+
+      <div id="sellerLock" class="muted">🔒 سجّل دخول أولاً.</div>
+
+      <div id="sellerBox" style="display:none">
+        <div class="row">
+          <input id="sTitle" placeholder="اسم المنتج">
+          <input id="sPrice" type="number" placeholder="السعر (مثال 120)">
+        </div>
+        <div class="row">
+          <select id="sCat">
+            <option value="perfume">عطور</option>
+            <option value="glasses">نظارات</option>
+          </select>
+          <input id="sImg" placeholder="رابط صورة (اختياري)">
+        </div>
+        <textarea id="sDesc" placeholder="وصف المنتج"></textarea>
+
+        <button class="btn gold" id="addListingBtn">إضافة منتج</button>
+
+        <div class="sep"></div>
+        <h3 class="h">منتجاتي</h3>
+        <div id="myListings" class="items"></div>
+      </div>
+    </section>
+
+  </div>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const log = (m)=> document.getElementById("log").textContent = String(m);
-
-  // بياناتك
+document.addEventListener("DOMContentLoaded", async ()=>{
   const SUPABASE_URL = "https://muowobprjsaiqxlcrtav.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11b3dvYnByanNhaXF4bGNydGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2Mjc4MDEsImV4cCI6MjA4NjIwMzgwMX0.KTK4yPFO-GZHSDG41JBq1H4kHO17iR7pr9lRU4crbfE";
 
-  // تأكد أن المكتبة وصلت
-  if (!window.supabase) {
-    log("❌ مكتبة Supabase لم تُحمّل.\n- جرّب إيقاف AdBlock\n- أو جرّب متصفح آخر\n- أو جرّب شبكة أخرى");
-    return;
-  }
+  const $=(id)=>document.getElementById(id);
+  const bar=(m,ok=true)=>{const b=$("bar");b.classList.add("show");b.textContent=(ok?"✅ ":"❌ ")+m;clearTimeout(window.__t);window.__t=setTimeout(()=>b.classList.remove("show"),3500);}
+  const esc=(s)=>String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
 
-  // مهم: لا تستعمل اسم supabase كمتغير لأنه يسبب تضارب
+  await new Promise(r=>setTimeout(r,50));
+  if(!window.supabase){bar("Supabase لم تُحمّل (AdBlock/شبكة).",false);return;}
+
+  // مهم: sb وليس supabase
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async function refresh(){
-    const { data, error } = await sb.auth.getSession();
-    if(error){ log("Session error: " + error.message); return; }
-    const u = data.session?.user;
-    document.getElementById("logout").style.display = u ? "" : "none";
-    log(u ? ("✅ أنت داخل: " + u.email) : "غير مسجل.");
+  let user=null;
+  let cart=[];
+
+  function cartCount(){ $("cartCount").textContent = cart.reduce((s,i)=>s+i.qty,0); }
+
+  function imgOrFallback(url){
+    if(url && url.trim()) return url.trim();
+    const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600'><defs>
+    <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#0b0f1a'/>
+    <stop offset='1' stop-color='#20162f'/></linearGradient></defs>
+    <rect width='900' height='600' fill='url(#g)'/><circle cx='220' cy='220' r='140' fill='rgba(212,175,55,.22)'/>
+    <circle cx='680' cy='380' r='170' fill='rgba(124,58,237,.18)'/>
+    <text x='60' y='520' fill='rgba(255,255,255,.75)' font-family='Arial' font-size='44'>LUNEVIRA</text></svg>`;
+    return "data:image/svg+xml;utf8,"+encodeURIComponent(svg);
   }
 
-  document.getElementById("signup").onclick = async ()=>{
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("pass").value;
-    if(!email.includes("@")) return log("❌ اكتب إيميل صحيح");
-    if(password.length < 8) return log("❌ كلمة المرور 8 أحرف أو أكثر");
+  async function refreshSession(){
+    const {data,error}=await sb.auth.getSession();
+    if(error){bar(error.message,false);return;}
+    user=data.session?.user||null;
 
-    log("… جاري التسجيل");
-    const { data, error } = await sb.auth.signUp({ email, password });
-    if(error) return log("❌ SignUp error: " + error.message);
-    log("✅ SignUp OK.\n" + (data.session ? "Session created ✅" : "Session = null (Confirm Email مفعّل)"));
-    await refresh();
+    if(user){
+      $("who").textContent=user.email;
+      $("logoutBtn").style.display="";
+      $("authBox").style.display="none";
+      $("userBox").style.display="";
+      $("sellerLock").style.display="none";
+      $("sellerBox").style.display="";
+      await loadMyListings();
+    } else {
+      $("who").textContent="غير مسجل";
+      $("logoutBtn").style.display="none";
+      $("authBox").style.display="";
+      $("userBox").style.display="none";
+      $("sellerLock").style.display="";
+      $("sellerBox").style.display="none";
+    }
+  }
+
+  $("signupBtn").onclick = async ()=>{
+    const email=$("email").value.trim();
+    const password=$("pass").value;
+    if(!email.includes("@")) return bar("اكتب إيميل صحيح",false);
+    if(password.length<8) return bar("كلمة المرور 8+ أحرف",false);
+    const {error}=await sb.auth.signUp({email,password});
+    if(error) return bar(error.message,false);
+    bar("تم التسجيل ✅");
+    await refreshSession();
   };
 
-  document.getElementById("signin").onclick = async ()=>{
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("pass").value;
-    log("… جاري الدخول");
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if(error) return log("❌ SignIn error: " + error.message);
-    log("✅ SignIn OK: " + (data.user?.email || "—"));
-    await refresh();
+  $("signinBtn").onclick = async ()=>{
+    const email=$("email").value.trim();
+    const password=$("pass").value;
+    const {error}=await sb.auth.signInWithPassword({email,password});
+    if(error) return bar(error.message,false);
+    bar("تم الدخول ✅");
+    await refreshSession();
   };
 
-  document.getElementById("logout").onclick = async ()=>{
+  $("logoutBtn").onclick = async ()=>{
     await sb.auth.signOut();
-    await refresh();
+    cart=[]; cartCount();
+    bar("تم الخروج");
+    await refreshSession();
   };
 
-  await refresh();
+  async function loadStore(){
+    const q=$("search").value.trim().toLowerCase();
+    const cat=$("cat").value;
+
+    let query = sb.from("listings").select("*").eq("status","active").order("created_at",{ascending:false});
+    if(cat!=="all") query = query.eq("category",cat);
+
+    const {data,error}=await query;
+    if(error) return bar("Listings: "+error.message,false);
+
+    let list=(data||[]);
+    if(q) list=list.filter(x=>(x.title||"").toLowerCase().includes(q)||(x.description||"").toLowerCase().includes(q));
+
+    $("list").innerHTML = list.length ? list.map(p=>`
+      <div class="item">
+        <div class="thumb">
+          <span class="tag">${p.category==="perfume"?"عطر":"نظارات"}</span>
+          <img src="${imgOrFallback(p.image_url)}" alt="">
+        </div>
+        <div class="body">
+          <h3 class="title">${esc(p.title)}</h3>
+          <p class="desc">${esc(p.description||"—")}</p>
+          <div class="meta">
+            <div class="price">${Number(p.price).toFixed(0)} USDT</div>
+            <button class="btn gold" data-add="${p.id}">أضف للسلة</button>
+          </div>
+        </div>
+      </div>
+    `).join("") : `<div class="muted">لا توجد نتائج.</div>`;
+
+    document.querySelectorAll("[data-add]").forEach(btn=>{
+      btn.onclick=()=>{
+        const id=btn.getAttribute("data-add");
+        const p=list.find(x=>x.id===id);
+        if(!p) return;
+        const i=cart.findIndex(x=>x.listing.id===id);
+        if(i>=0) cart[i].qty++; else cart.push({listing:p,qty:1});
+        cartCount(); bar("تمت الإضافة للسلة");
+      };
+    });
+  }
+
+  $("search").addEventListener("input",()=>{clearTimeout(window.__s);window.__s=setTimeout(loadStore,200);});
+  $("cat").addEventListener("change",loadStore);
+
+  async function loadMyListings(){
+    if(!user) return;
+    const {data,error}=await sb.from("listings").select("*").eq("seller_id",user.id).neq("status","deleted").order("created_at",{ascending:false});
+    if(error) return bar("My listings: "+error.message,false);
+
+    const mine=data||[];
+    $("myListings").innerHTML = mine.length ? mine.map(p=>`
+      <div class="item">
+        <div class="thumb">
+          <span class="tag">حالته: ${p.status}</span>
+          <img src="${imgOrFallback(p.image_url)}" alt="">
+        </div>
+        <div class="body">
+          <h3 class="title">${esc(p.title)}</h3>
+          <p class="desc">${esc(p.description||"—")}</p>
+          <div class="meta">
+            <div class="price">${Number(p.price).toFixed(0)} USDT</div>
+            <button class="btn bad" data-del="${p.id}">حذف</button>
+          </div>
+        </div>
+      </div>
+    `).join("") : `<div class="muted">لا توجد منتجات بعد.</div>`;
+
+    document.querySelectorAll("[data-del]").forEach(b=>{
+      b.onclick=async ()=>{
+        const id=b.getAttribute("data-del");
+        if(!confirm("حذف المنتج؟")) return;
+        const {error}=await sb.from("listings").update({status:"deleted"}).eq("id",id);
+        if(error) return bar(error.message,false);
+        bar("تم الحذف");
+        await loadMyListings(); await loadStore();
+      };
+    });
+  }
+
+  $("addListingBtn").onclick = async ()=>{
+    if(!user) return bar("سجل دخول أولاً",false);
+    const title=$("sTitle").value.trim();
+    const price=Number($("sPrice").value);
+    const category=$("sCat").value;
+    const image_url=$("sImg").value.trim();
+    const description=$("sDesc").value.trim();
+    if(!title) return bar("اكتب اسم المنتج",false);
+    if(!Number.isFinite(price)||price<=0) return bar("سعر غير صحيح",false);
+
+    const {error}=await sb.from("listings").insert([{
+      seller_id:user.id,title,description,price,category,image_url,status:"active"
+    }]);
+    if(error) return bar(error.message,false);
+
+    $("sTitle").value="";$("sPrice").value="";$("sImg").value="";$("sDesc").value="";
+    bar("تمت الإضافة ✅");
+    await loadMyListings(); await loadStore();
+  };
+
+  $("cartBtn").onclick = ()=>{
+    if(cart.length===0) return alert("السلة فارغة");
+    const total=cart.reduce((s,i)=>s+Number(i.listing.price)*i.qty,0);
+    alert("الإجمالي: "+total+" USDT\n(الدفع/الطلبات سنضيفها بعد التأكد أن listings تعمل)");
+  };
+
+  await refreshSession();
+  await loadStore();
+  cartCount();
 });
 </script>
 </body>
-  </html>
+</html>
