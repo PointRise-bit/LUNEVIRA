@@ -1,143 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LUNEVIRA Marketplace</title>
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<style>
-body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff;padding:15px}
-.card{border:1px solid rgba(255,255,255,.15);padding:15px;border-radius:15px;margin-top:15px;background:rgba(255,255,255,.05)}
-input,select{width:100%;padding:10px;margin-top:8px;border-radius:10px;border:1px solid #444;background:#111;color:#fff}
-button{padding:10px 15px;border-radius:10px;border:none;font-weight:bold;margin-top:10px;cursor:pointer}
-.gold{background:gold;color:#000}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px}
-.small{font-size:12px;opacity:.8}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LUNEVIRA — Auth Fix</title>
+
+  <!-- مهم: defer حتى يتأكد التحميل -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2" defer></script>
+
+  <style>
+    body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff;padding:16px}
+    .card{max-width:520px;margin:18px auto;border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.06);border-radius:18px;padding:16px}
+    input{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.15);
+      background:rgba(255,255,255,.06);color:#fff;outline:none;margin-top:10px}
+    button{padding:12px 14px;border-radius:14px;border:0;font-weight:900;cursor:pointer;margin-top:10px}
+    .gold{background:linear-gradient(135deg,#f1d37a,#d4af37);color:#061018}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,.15);color:#fff}
+    .log{margin-top:12px;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.15);
+      background:rgba(0,0,0,.35);white-space:pre-wrap;line-height:1.7}
+  </style>
 </head>
+
 <body>
+  <div class="card">
+    <h2 style="margin:0 0 8px">تسجيل / دخول</h2>
 
-<h2>LUNEVIRA Marketplace</h2>
+    <input id="email" type="email" placeholder="test123@gmail.com">
+    <input id="pass" type="password" placeholder="12345678">
 
-<div class="card">
-<h3>تسجيل / دخول</h3>
-<input id="email" placeholder="email">
-<input id="pass" type="password" placeholder="password">
-<button class="gold" onclick="signup()">تسجيل</button>
-<button onclick="login()">دخول</button>
-<button onclick="logout()">خروج</button>
-<div id="userBox"></div>
-</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="gold" id="signup">تسجيل</button>
+      <button class="ghost" id="signin">دخول</button>
+      <button class="ghost" id="logout" style="display:none">خروج</button>
+    </div>
 
-<div class="card">
-<h3>إضافة منتج</h3>
-<input id="pname" placeholder="اسم المنتج">
-<input id="pprice" type="number" placeholder="السعر">
-<input id="pimage" placeholder="رابط صورة">
-<button class="gold" onclick="addProduct()">إضافة</button>
-</div>
-
-<div class="card">
-<h3>المنتجات</h3>
-<div id="products" class="grid"></div>
-</div>
+    <div class="log" id="log">جاهز…</div>
+  </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const log = (m)=> document.getElementById("log").textContent = String(m);
 
-const TRC20 = "TUG7EVJBsZZ61K3X7hAik8438eLqXyVAQm";
-const BEP20 = "0xec92a420efe51e1482bff48b604827734d313fab";
-const COMMISSION = 0.08;
+  // بياناتك
+  const SUPABASE_URL = "https://muowobprjsaiqxlcrtav.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11b3dvYnByanNhaXF4bGNydGF2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2Mjc4MDEsImV4cCI6MjA4NjIwMzgwMX0.KTK4yPFO-GZHSDG41JBq1H4kHO17iR7pr9lRU4crbfE";
 
-const supabase = supabase.createClient(
-"https://muowobprjsaiqxlcrtav.supabase.co",
-"YOUR_ANON_KEY_HERE"
-);
+  // تأكد أن المكتبة وصلت
+  if (!window.supabase) {
+    log("❌ مكتبة Supabase لم تُحمّل.\n- جرّب إيقاف AdBlock\n- أو جرّب متصفح آخر\n- أو جرّب شبكة أخرى");
+    return;
+  }
 
-async function signup(){
-const email=document.getElementById("email").value;
-const pass=document.getElementById("pass").value;
-await supabase.auth.signUp({email,password:pass});
-alert("تم التسجيل");
-}
+  // مهم: لا تستعمل اسم supabase كمتغير لأنه يسبب تضارب
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-async function login(){
-const email=document.getElementById("email").value;
-const pass=document.getElementById("pass").value;
-await supabase.auth.signInWithPassword({email,password:pass});
-checkUser();
-}
+  async function refresh(){
+    const { data, error } = await sb.auth.getSession();
+    if(error){ log("Session error: " + error.message); return; }
+    const u = data.session?.user;
+    document.getElementById("logout").style.display = u ? "" : "none";
+    log(u ? ("✅ أنت داخل: " + u.email) : "غير مسجل.");
+  }
 
-async function logout(){
-await supabase.auth.signOut();
-checkUser();
-}
+  document.getElementById("signup").onclick = async ()=>{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("pass").value;
+    if(!email.includes("@")) return log("❌ اكتب إيميل صحيح");
+    if(password.length < 8) return log("❌ كلمة المرور 8 أحرف أو أكثر");
 
-async function checkUser(){
-const {data}=await supabase.auth.getSession();
-const user=data.session?.user;
-document.getElementById("userBox").innerHTML=user?`أنت داخل: ${user.email}`:"غير مسجل";
-}
-checkUser();
+    log("… جاري التسجيل");
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if(error) return log("❌ SignUp error: " + error.message);
+    log("✅ SignUp OK.\n" + (data.session ? "Session created ✅" : "Session = null (Confirm Email مفعّل)"));
+    await refresh();
+  };
 
-async function addProduct(){
-const {data}=await supabase.auth.getSession();
-const user=data.session?.user;
-if(!user)return alert("سجل دخول");
+  document.getElementById("signin").onclick = async ()=>{
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("pass").value;
+    log("… جاري الدخول");
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) return log("❌ SignIn error: " + error.message);
+    log("✅ SignIn OK: " + (data.user?.email || "—"));
+    await refresh();
+  };
 
-await supabase.from("products").insert([{
-name:document.getElementById("pname").value,
-price:document.getElementById("pprice").value,
-image:document.getElementById("pimage").value,
-seller_id:user.id
-}]);
+  document.getElementById("logout").onclick = async ()=>{
+    await sb.auth.signOut();
+    await refresh();
+  };
 
-loadProducts();
-}
-
-async function loadProducts(){
-const {data}=await supabase.from("products").select("*");
-let html="";
-data.forEach(p=>{
-html+=`
-<div class="card">
-<img src="${p.image}" width="100%">
-<h4>${p.name}</h4>
-<p>${p.price} USDT</p>
-<button onclick="buy('${p.id}',${p.price})" class="gold">شراء</button>
-</div>
-`;
+  await refresh();
 });
-document.getElementById("products").innerHTML=html;
-}
-loadProducts();
-
-async function buy(id,price){
-const network=prompt("اكتب الشبكة: TRC20 أو BEP20");
-const tx=prompt("اكتب Tx Hash");
-if(!network||!tx)return;
-
-const {data}=await supabase.auth.getSession();
-const user=data.session?.user;
-if(!user)return alert("سجل دخول");
-
-const fee=price*COMMISSION;
-const seller=price-fee;
-
-await supabase.from("orders").insert([{
-user_id:user.id,
-product_id:id,
-amount:price,
-network:network,
-tx_hash:tx,
-platform_fee:fee,
-seller_amount:seller,
-status:"pending"
-}]);
-
-alert("أرسل المبلغ إلى:\n"+(network=="TRC20"?TRC20:BEP20));
-}
-
 </script>
-
 </body>
-</html>
+  </html>
