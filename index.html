@@ -1,4 +1,4 @@
-<!doctype html>
+د<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
@@ -341,3 +341,187 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUNEVIRA Marketplace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #222;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .filters, .reviews-section, .faq, .order-tracking, .seller-dashboard, .product {
+            padding: 20px;
+            background-color: white;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .product img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .product {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .featured-products {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>LUNEVIRA Marketplace</h1>
+    <p>عمولة %8 - USDT TRC20/BEP20</p>
+</header>
+
+<!-- Filters Section -->
+<div class="filters">
+    <h3>فلتر المنتجات</h3>
+    <label for="category">الفئة:</label>
+    <select id="category">
+        <option value="عطور">عطور</option>
+        <option value="ملابس">ملابس</option>
+        <option value="إلكترونيات">إلكترونيات</option>
+    </select>
+
+    <label for="price-range">الحد الأقصى للسعر:</label>
+    <input type="range" id="price-range" min="0" max="500" value="100">
+    <span id="price-value">100</span>
+
+    <button onclick="filterProducts()">بحث</button>
+</div>
+
+<!-- Featured Products Section -->
+<div class="featured-products">
+    <div class="product">
+        <img src="product-image.jpg" alt="product" />
+        <p>عطر فاخر</p>
+        <p>السعر: 100 USDT</p>
+        <button>أضف للسلة</button>
+    </div>
+    <div class="product">
+        <img src="product-image.jpg" alt="product" />
+        <p>ساعة يد</p>
+        <p>السعر: 150 USDT</p>
+        <button>أضف للسلة</button>
+    </div>
+</div>
+
+<!-- Reviews Section -->
+<div class="reviews-section">
+    <h3>التقييمات والمراجعات</h3>
+    <form action="#">
+        <label for="review">أضف تقييمك:</label>
+        <textarea id="review" name="review" rows="4" placeholder="اكتب مراجعتك هنا"></textarea>
+        <button type="submit">إرسال</button>
+    </form>
+    <div class="review">
+        <p><strong>الاسم</strong>: محمد</p>
+        <p><strong>التقييم:</strong> ⭐⭐⭐⭐⭐</p>
+        <p>منتج رائع! أنصح به!</p>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="faq">
+    <h3>الأسئلة الشائعة</h3>
+    <div class="question">
+        <p><strong>كيف يمكنني الدفع؟</strong></p>
+        <p>يمكنك الدفع باستخدام USDT أو عبر بطاقة ائتمانية أو PayPal.</p>
+    </div>
+</div>
+
+<!-- Order Tracking Section -->
+<div class="order-tracking">
+    <h3>تتبع الطلب</h3>
+    <form action="#">
+        <label for="order-id">أدخل رقم الطلب:</label>
+        <input type="text" id="order-id" />
+        <button type="submit">تتبع</button>
+    </form>
+</div>
+
+<!-- Seller Dashboard Section -->
+<div class="seller-dashboard">
+    <h3>لوحة البائع</h3>
+    <button>إضافة منتج جديد</button>
+    <button>إدارة المنتجات</button>
+</div>
+
+<!-- Add Product Form -->
+<div class="add-product">
+    <h3>إضافة منتج جديد</h3>
+    <form action="#">
+        <label for="product-name">اسم المنتج:</label>
+        <input type="text" id="product-name" placeholder="اسم المنتج" />
+        
+        <label for="product-price">السعر:</label>
+        <input type="number" id="product-price" placeholder="السعر" />
+        
+        <label for="product-image">رابط الصورة:</label>
+        <input type="text" id="product-image" placeholder="رابط الصورة" />
+        
+        <button type="submit">إضافة المنتج</button>
+    </form>
+</div>
+
+<!-- Cart Section -->
+<div class="cart">
+    <h3>السلة</h3>
+    <ul>
+        <li>عطر فاخر - 100 USDT</li>
+        <li>ساعة يد - 150 USDT</li>
+    </ul>
+    <p>إجمالي السعر: 250 USDT</p>
+    <button>إتمام الطلب</button>
+</div>
+
+<script>
+    // الجافا سكربت لتحديث الفلاتر
+    function filterProducts() {
+        const category = document.getElementById('category').value;
+        const price = document.getElementById('price-range').value;
+        const priceValue = document.getElementById('price-value');
+        priceValue.textContent = price;
+        
+        // هنا استدعاء قاعدة البيانات لفلترة المنتجات بناء على الفئة والسعر
+    }
+
+    // الجافا سكربت لإضافة التقييم
+    const submitReview = () => {
+        const reviewText = document.getElementById('review').value;
+        if(reviewText !== "") {
+            alert('تم إضافة التقييم بنجاح');
+        }
+    };
+    document.querySelector('form').addEventListener('submit', submitReview);
+</script>
+
+</body>
+  </html>
