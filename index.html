@@ -118,6 +118,15 @@
       border-radius: 5px;
       border: none;
     }
+    .product-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .product-card-container {
+      width: 48%;
+      margin-right: 2%;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -130,7 +139,7 @@
   <!-- Navbar -->
   <div class="nav-bar">
     <a href="#products">المنتجات</a>
-    <a href="#add-product">إضافة منتج</a>
+    <a href="#add-product" onclick="showAddProductForm()">إضافة منتج</a>
     <a href="#login-form">تسجيل الدخول</a>
     <a href="#register-form">تسجيل جديد</a>
   </div>
@@ -162,24 +171,29 @@
     <!-- صفحة المنتجات الخاصة بالمنصة -->
     <div class="platform-products" id="products">
       <h2>منتجاتنا</h2>
-
-      <div class="product-card">
-        <img src="product1.jpg" alt="عطر فاخر">
-        <div class="product-details">
-          <h5>عطر فاخر</h5>
-          <p>السعر: USD 30</p>
-          <p>نسبة المنصة (8%): USD 2.4</p>
-          <button class="add-to-cart-btn">أضف للسلة</button>
+      <div class="product-container">
+        <div class="product-card-container">
+          <div class="product-card">
+            <img src="product1.jpg" alt="عطر فاخر">
+            <div class="product-details">
+              <h5>عطر فاخر</h5>
+              <p>السعر: USD 30</p>
+              <p>نسبة المنصة (8%): USD 2.4</p>
+              <button class="add-to-cart-btn">أضف للسلة</button>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="product-card">
-        <img src="product2.jpg" alt="ماسكرا">
-        <div class="product-details">
-          <h5>ماسكرا</h5>
-          <p>السعر: USD 20</p>
-          <p>نسبة المنصة (8%): USD 1.6</p>
-          <button class="add-to-cart-btn">أضف للسلة</button>
+        <div class="product-card-container">
+          <div class="product-card">
+            <img src="product2.jpg" alt="ماسكرا">
+            <div class="product-details">
+              <h5>ماسكرا</h5>
+              <p>السعر: USD 20</p>
+              <p>نسبة المنصة (8%): USD 1.6</p>
+              <button class="add-to-cart-btn">أضف للسلة</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
