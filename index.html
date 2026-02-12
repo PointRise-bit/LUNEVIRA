@@ -58,37 +58,14 @@
     .add-to-cart-btn:hover {
       background-color: #218838;
     }
-    .account-login {
+    .cart-notification {
+      display: none;
+      padding: 10px;
       background-color: #444;
-      padding: 20px;
-      border-radius: 8px;
+      color: white;
       margin-top: 20px;
+      border-radius: 5px;
       text-align: center;
-    }
-    .account-login input {
-      width: 80%;
-      padding: 10px;
-      margin: 10px;
-      border-radius: 5px;
-      border: none;
-      background-color: #555;
-      color: white;
-    }
-    .account-login button {
-      padding: 10px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 85%;
-    }
-    .account-login button:hover {
-      background-color: #0056b3;
-    }
-    .account-login .new-account {
-      margin-top: 15px;
-      color: #f0f0f0;
     }
     .nav-bar {
       background-color: #333;
@@ -103,20 +80,6 @@
     }
     .nav-bar a:hover {
       color: #28a745;
-    }
-    .seller-page {
-      background-color: #444;
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 8px;
-    }
-    .seller-page input,
-    .seller-page button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: none;
     }
     .product-container {
       display: flex;
@@ -139,41 +102,18 @@
   <!-- Navbar -->
   <div class="nav-bar">
     <a href="#products">المنتجات</a>
-    <a href="#add-product" onclick="showAddProductForm()">إضافة منتج</a>
     <a href="#login-form">تسجيل الدخول</a>
     <a href="#register-form">تسجيل جديد</a>
   </div>
 
   <div class="container">
 
-    <!-- صفحة تسجيل الدخول أو حساب التاجر -->
-    <div class="account-login" id="login-form">
-      <h2>تسجيل الدخول</h2>
-      <form id="loginForm">
-        <input type="email" id="email" placeholder="البريد الإلكتروني" required>
-        <input type="password" id="password" placeholder="كلمة المرور" required>
-        <button type="submit">تسجيل الدخول</button>
-      </form>
-      <p class="new-account">ليس لديك حساب؟ <a href="#register-form">تسجيل جديد</a></p>
-    </div>
-
-    <!-- صفحة التسجيل الجديد -->
-    <div class="account-login" id="register-form" style="display: none;">
-      <h2>إنشاء حساب جديد</h2>
-      <form id="registerFormContent">
-        <input type="email" id="registerEmail" placeholder="البريد الإلكتروني" required>
-        <input type="password" id="registerPassword" placeholder="كلمة المرور" required>
-        <button type="submit">تسجيل الحساب</button>
-      </form>
-      <p class="new-account">لديك حساب؟ <a href="#login-form">تسجيل الدخول</a></p>
-    </div>
-
     <!-- صفحة المنتجات الخاصة بالمنصة -->
     <div class="platform-products" id="products">
       <h2>منتجاتنا</h2>
       <div class="product-container">
         <div class="product-card-container">
-          <div class="product-card">
+          <div class="product-card" data-product-id="1">
             <img src="product1.jpg" alt="عطر فاخر">
             <div class="product-details">
               <h5>عطر فاخر</h5>
@@ -185,7 +125,7 @@
         </div>
 
         <div class="product-card-container">
-          <div class="product-card">
+          <div class="product-card" data-product-id="2">
             <img src="product2.jpg" alt="ماسكرا">
             <div class="product-details">
               <h5>ماسكرا</h5>
@@ -198,68 +138,44 @@
       </div>
     </div>
 
-    <!-- صفحة إضافة المنتج للبائعين -->
-    <div class="seller-page" id="add-product" style="display: none;">
-      <h2>إضافة منتج</h2>
-      <form id="addProductForm">
-        <input type="text" id="productName" placeholder="اسم المنتج" required>
-        <input type="number" id="productPrice" placeholder="السعر (USD)" required>
-        <input type="file" id="productImage" accept="image/*" required>
-        <button type="submit">إضافة المنتج</button>
-      </form>
+    <!-- Notification for cart -->
+    <div class="cart-notification" id="cart-notification">
+      تم إضافة المنتج إلى السلة بنجاح!
     </div>
 
   </div>
 
   <script>
-    // تسجيل الدخول
-    document.getElementById("loginForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    // قائمة السلة المخزنة في localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-      if (email && password) {
-        document.getElementById("loginForm").style.display = "none";
-        alert(`تم تسجيل الدخول بنجاح! مرحبًا ${email}`);
-      } else {
-        alert("فشل في تسجيل الدخول. تحقق من بياناتك.");
-      }
-    });
+    // إضافة منتج للسلة
+    function addToCart(productId) {
+      // تحديد المنتج المضاف
+      const product = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+      const productName = product.querySelector('h5').textContent;
+      const productPrice = parseFloat(product.querySelector('p').textContent.split(':')[1].trim().replace('USD', '').trim());
 
-    // إظهار نموذج التسجيل
-    document.getElementById("registerFormContent").addEventListener("submit", function(event) {
-      event.preventDefault();
-      const email = document.getElementById("registerEmail").value;
-      const password = document.getElementById("registerPassword").value;
+      // إضافة المنتج إلى السلة
+      cart.push({ productId, productName, productPrice });
+      
+      // حفظ السلة في localStorage
+      localStorage.setItem('cart', JSON.stringify(cart));
 
-      if (email && password) {
-        alert(`تم التسجيل بنجاح! مرحبًا ${email}`);
-        document.getElementById("registerForm").style.display = "none";
-        document.getElementById("loginForm").style.display = "block";
-      } else {
-        alert("فشل في التسجيل. تحقق من البيانات.");
-      }
-    });
-
-    // إظهار صفحة إضافة المنتج للبائعين
-    function showAddProductForm() {
-      document.getElementById("add-product").style.display = "block";
+      // عرض إشعار
+      document.getElementById('cart-notification').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('cart-notification').style.display = 'none';
+      }, 3000); // إخفاء الإشعار بعد 3 ثواني
     }
 
-    // إضافة منتج
-    document.getElementById("addProductForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-      const productName = document.getElementById("productName").value;
-      const productPrice = document.getElementById("productPrice").value;
-      const productImage = document.getElementById("productImage").files[0];
-
-      if (productName && productPrice && productImage) {
-        alert(`تم إضافة المنتج: ${productName} بسعر: USD ${productPrice}`);
-      } else {
-        alert("يرجى ملء جميع الحقول.");
-      }
+    // ربط الزر لإضافة المنتجات إلى السلة
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = this.closest('.product-card').getAttribute('data-product-id');
+        addToCart(productId);
+      });
     });
-
   </script>
 
 </body>
