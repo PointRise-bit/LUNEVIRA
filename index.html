@@ -525,3 +525,16 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
 </body>
   </html>
+window.onload = async function() {
+    const products = await getProductsFromDatabase();
+    displayProducts(products);
+};
+
+function getProductsFromDatabase() {
+    // هذه الدالة تستدعي قاعدة البيانات
+    // وتعيد المنتجات من قاعدة البيانات
+}
+
+function displayProducts(products) {
+    // هذه الدالة تعرض المنتجات على الصفحة
+}
