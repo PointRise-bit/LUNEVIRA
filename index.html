@@ -58,18 +58,37 @@
     .add-to-cart-btn:hover {
       background-color: #218838;
     }
-    .admin-panel, .seller-products, .platform-products {
-      margin-top: 30px;
-    }
-    .admin-panel table {
-      width: 100%;
-      margin-bottom: 20px;
-      border-collapse: collapse;
-    }
-    .admin-panel th, .admin-panel td {
-      padding: 10px;
+    .account-login {
+      background-color: #444;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
       text-align: center;
-      border: 1px solid #555;
+    }
+    .account-login input {
+      width: 80%;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #555;
+      color: white;
+    }
+    .account-login button {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 85%;
+    }
+    .account-login button:hover {
+      background-color: #0056b3;
+    }
+    .account-login .new-account {
+      margin-top: 15px;
+      color: #f0f0f0;
     }
   </style>
 </head>
@@ -88,9 +107,22 @@
       <form id="loginForm">
         <input type="email" id="email" placeholder="البريد الإلكتروني" required>
         <input type="password" id="password" placeholder="كلمة المرور" required>
-        <button type="submit" class="add-to-cart-btn">تسجيل الدخول</button>
+        <button type="submit">تسجيل الدخول</button>
       </form>
       <div id="loginMessage"></div>
+      <p class="new-account">ليس لديك حساب؟ <a href="#" onclick="showRegisterForm()">تسجيل جديد</a></p>
+    </div>
+
+    <!-- صفحة التسجيل الجديد -->
+    <div class="account-login" id="registerForm" style="display: none;">
+      <h2>إنشاء حساب جديد</h2>
+      <form id="registerFormContent">
+        <input type="email" id="registerEmail" placeholder="البريد الإلكتروني" required>
+        <input type="password" id="registerPassword" placeholder="كلمة المرور" required>
+        <button type="submit">تسجيل الحساب</button>
+      </form>
+      <div id="registerMessage"></div>
+      <p class="new-account">لديك حساب؟ <a href="#" onclick="showLoginForm()">تسجيل الدخول</a></p>
     </div>
 
     <!-- صفحة المنتجات الخاصة بالمنصة -->
@@ -118,61 +150,6 @@
       </div>
     </div>
 
-    <!-- صفحة إدارة التجار (إنشاء وادارة التجار) -->
-    <div class="admin-panel">
-      <h2>إدارة التجار</h2>
-      <p>عدد التجار المسجلين: 2</p>
-      <h3>قائمة التجار</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>البريد الإلكتروني</th>
-            <th>تاريخ التسجيل</th>
-            <th>عدد المنتجات المضافة</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- تكرار بيانات التجار هنا -->
-          <tr>
-            <td>test@example.com</td>
-            <td>2023-04-20</td>
-            <td>5</td>
-          </tr>
-          <tr>
-            <td>john.doe@example.com</td>
-            <td>2023-04-21</td>
-            <td>3</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- صفحة المنتجات الخاصة بالتجار -->
-    <div class="seller-products">
-      <h2>منتجات التجار</h2>
-      <!-- منتجات التاجر الأول -->
-      <div class="product-card">
-        <img src="seller-product1.jpg" alt="منتج 1">
-        <div class="product-details">
-          <h5>منتج التاجر 1</h5>
-          <p>السعر: USD 50</p>
-          <p>نسبة المنصة (8%): USD 4</p>
-          <button class="add-to-cart-btn">أضف للسلة</button>
-        </div>
-      </div>
-
-      <!-- منتجات التاجر الثاني -->
-      <div class="product-card">
-        <img src="seller-product2.jpg" alt="منتج 2">
-        <div class="product-details">
-          <h5>منتج التاجر 2</h5>
-          <p>السعر: USD 40</p>
-          <p>نسبة المنصة (8%): USD 3.2</p>
-          <button class="add-to-cart-btn">أضف للسلة</button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script>
@@ -182,11 +159,35 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      // هنا يمكن استبدال عملية التحقق من الدخول عبر API أو Supabase
       if (email && password) {
         document.getElementById("loginMessage").innerHTML = `تم تسجيل الدخول بنجاح. مرحبًا ${email}!`;
       } else {
         document.getElementById("loginMessage").innerHTML = "فشل في تسجيل الدخول. تحقق من بياناتك.";
+      }
+    });
+
+    // إظهار نموذج التسجيل
+    function showRegisterForm() {
+      document.getElementById("registerForm").style.display = "block";
+      document.getElementById("loginForm").style.display = "none";
+    }
+
+    // إظهار نموذج تسجيل الدخول
+    function showLoginForm() {
+      document.getElementById("registerForm").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+    }
+
+    // التسجيل الجديد
+    document.getElementById("registerFormContent").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const email = document.getElementById("registerEmail").value;
+      const password = document.getElementById("registerPassword").value;
+
+      if (email && password) {
+        document.getElementById("registerMessage").innerHTML = `تم التسجيل بنجاح. مرحبًا ${email}!`;
+      } else {
+        document.getElementById("registerMessage").innerHTML = "فشل في التسجيل. تحقق من البيانات.";
       }
     });
   </script>
