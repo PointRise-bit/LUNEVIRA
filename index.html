@@ -1,182 +1,833 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!doctype html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منصة LUNEVIERA</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LUNEVIERA Marketplace</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #2d2d2d;
-      color: white;
-      margin: 0;
-      padding: 0;
+    :root{
+      --bg:#0b0f17;
+      --card:#121826;
+      --muted:#9aa4b2;
+      --text:#e6edf6;
+      --accent:#f5c542;
+      --good:#22c55e;
+      --bad:#ef4444;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 18px 45px rgba(0,0,0,.35);
+      --radius:18px;
     }
-    header {
-      background-color: #333;
-      padding: 15px;
-      text-align: center;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Tahoma, Arial;
+      background: radial-gradient(1200px 700px at 80% -10%, rgba(245,197,66,.20), transparent 60%),
+                  radial-gradient(900px 600px at 10% 0%, rgba(99,102,241,.18), transparent 55%),
+                  var(--bg);
+      color:var(--text);
     }
-    header h1 {
-      margin: 0;
-      font-size: 24px;
+    a{color:var(--accent); text-decoration:none}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .topbar{
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);
+      background:rgba(18,24,38,.75);backdrop-filter: blur(10px); box-shadow: var(--shadow);
+      position:sticky;top:10px;z-index:10;
     }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{
+      width:42px;height:42px;border-radius:12px;
+      background: linear-gradient(135deg, rgba(245,197,66,.25), rgba(99,102,241,.25));
+      display:flex;align-items:center;justify-content:center;font-weight:800;
+      border:1px solid var(--line);
     }
-    .product-card {
-      background-color: #444;
-      color: white;
-      padding: 20px;
-      margin: 10px 0;
-      border-radius: 8px;
-      transition: transform 0.3s ease;
+    .title h1{margin:0;font-size:18px}
+    .title p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      border:1px solid var(--line);border-radius:999px;padding:8px 12px;
+      background:rgba(255,255,255,.04);
+      color:var(--text);font-size:13px;
     }
-    .product-card:hover {
-      transform: scale(1.05);
+    .btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;border-radius:14px;
+      cursor:pointer;transition:.15s;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      font-weight:700;
     }
-    .product-details {
-      padding: 10px;
+    .btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.09)}
+    .btn.primary{background:rgba(245,197,66,.16);border-color:rgba(245,197,66,.35);color:var(--text)}
+    .btn.primary:hover{background:rgba(245,197,66,.22)}
+    .btn.good{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.35)}
+    .btn.bad{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.35)}
+    .grid{
+      display:grid;gap:14px;margin-top:14px;
+      grid-template-columns: 1fr;
     }
-    .product-card img {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
+    @media (min-width: 980px){
+      .grid{grid-template-columns: 1.05fr .95fr;}
     }
-    .add-to-cart-btn {
-      background-color: #28a745;
-      color: white;
-      padding: 10px;
-      width: 100%;
-      text-align: center;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    .card{
+      border:1px solid var(--line);border-radius:var(--radius);
+      background:rgba(18,24,38,.80);backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      padding:14px;
     }
-    .add-to-cart-btn:hover {
-      background-color: #218838;
+    .card h2{margin:0 0 8px;font-size:16px}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .row > *{flex:1}
+    .input, select{
+      width:100%;
+      padding:12px 12px;border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      outline:none;
     }
-    .cart-notification {
-      display: none;
-      padding: 10px;
-      background-color: #444;
-      color: white;
-      margin-top: 20px;
-      border-radius: 5px;
-      text-align: center;
+    .input::placeholder{color:rgba(154,164,178,.75)}
+    .sep{height:1px;background:var(--line);margin:12px 0}
+    .msg{
+      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);font-size:13px;
+      white-space:pre-wrap;
     }
-    .nav-bar {
-      background-color: #333;
-      padding: 10px;
-      display: flex;
-      justify-content: space-around;
+    .msg.good{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.10)}
+    .msg.bad{border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.10)}
+    .products{
+      display:grid;gap:12px;
+      grid-template-columns: 1fr;
     }
-    .nav-bar a {
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
+    @media (min-width: 560px){
+      .products{grid-template-columns: 1fr 1fr;}
     }
-    .nav-bar a:hover {
-      color: #28a745;
+    .p{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.03);
+      border-radius:18px;
+      overflow:hidden;
     }
-    .product-container {
-      display: flex;
-      flex-wrap: wrap;
+    .p .img{
+      width:100%;height:170px;background:#0e1422;
+      display:flex;align-items:center;justify-content:center;
+      border-bottom:1px solid var(--line);
     }
-    .product-card-container {
-      width: 48%;
-      margin-right: 2%;
-      margin-bottom: 20px;
+    .p img{width:100%;height:170px;object-fit:cover;display:block}
+    .p .b{padding:12px}
+    .p h3{margin:0 0 6px;font-size:14px}
+    .p .meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px}
+    .p .price{font-size:16px;font-weight:900;color:var(--accent)}
+    .p .fee{font-size:12px;color:rgba(245,197,66,.9)}
+    .p .actions{margin-top:10px;display:flex;gap:8px}
+    .p .actions .btn{flex:1}
+    .small{font-size:12px;color:var(--muted)}
+    .badge{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.04);font-size:12px;color:var(--text);
     }
+    .right{justify-content:flex-end}
+    .kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .k{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03);padding:10px}
+    .k .v{font-size:18px;font-weight:900;margin-top:4px}
   </style>
 </head>
 <body>
-
-  <header>
-    <h1>منصة LUNEVIERA</h1>
-    <p>التسجيل والنسبة المئوية 8% من المبيعات</p>
-  </header>
-
-  <!-- Navbar -->
-  <div class="nav-bar">
-    <a href="#products">المنتجات</a>
-    <a href="#login-form">تسجيل الدخول</a>
-    <a href="#register-form">تسجيل جديد</a>
-  </div>
-
-  <div class="container">
-
-    <!-- صفحة المنتجات الخاصة بالمنصة -->
-    <div class="platform-products" id="products">
-      <h2>منتجاتنا</h2>
-      <div class="product-container">
-        <div class="product-card-container">
-          <div class="product-card" data-product-id="1">
-            <img src="product1.jpg" alt="عطر فاخر">
-            <div class="product-details">
-              <h5>عطر فاخر</h5>
-              <p>السعر: USD 30</p>
-              <p>نسبة المنصة (8%): USD 2.4</p>
-              <button class="add-to-cart-btn">أضف للسلة</button>
-            </div>
-          </div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">LV</div>
+        <div class="title">
+          <h1>LUNEVIERA — Marketplace</h1>
+          <p class="muted">USDT TRC20/BEP20 • عمولة المنصة 8%</p>
         </div>
+      </div>
 
-        <div class="product-card-container">
-          <div class="product-card" data-product-id="2">
-            <img src="product2.jpg" alt="ماسكرا">
-            <div class="product-details">
-              <h5>ماسكرا</h5>
-              <p>السعر: USD 20</p>
-              <p>نسبة المنصة (8%): USD 1.6</p>
-              <button class="add-to-cart-btn">أضف للسلة</button>
-            </div>
-          </div>
-        </div>
+      <div class="row right" style="flex:0 0 auto; gap:10px">
+        <div class="pill" id="userPill">غير مسجل</div>
+        <button class="btn bad" id="logoutBtn" style="display:none">خروج</button>
+        <button class="btn" id="refreshBtn">تحديث</button>
       </div>
     </div>
 
-    <!-- Notification for cart -->
-    <div class="cart-notification" id="cart-notification">
-      تم إضافة المنتج إلى السلة بنجاح!
-    </div>
+    <div class="grid">
+      <!-- LEFT: Products + Cart -->
+      <div class="card">
+        <div class="row" style="align-items:flex-end">
+          <div>
+            <h2>المنتجات</h2>
+            <div class="small">الكل يرى هذه المنتجات (Public). أضف للسلة ثم Checkout لإنشاء طلب.</div>
+          </div>
+          <div class="row" style="flex:0 0 auto">
+            <select id="categoryFilter" style="min-width:160px">
+              <option value="">الكل</option>
+              <option>عطر</option>
+              <option>نظارات</option>
+              <option>ملابس</option>
+              <option>إلكترونيات</option>
+              <option>أخرى</option>
+            </select>
+          </div>
+        </div>
 
+        <div class="sep"></div>
+
+        <div class="row">
+          <input class="input" id="searchBox" placeholder="بحث (مثال: عطر / نظارات)" />
+          <button class="btn" id="clearSearchBtn" style="flex:0 0 auto">مسح</button>
+        </div>
+
+        <div class="sep"></div>
+
+        <div id="productsBox" class="products"></div>
+
+        <div class="sep"></div>
+
+        <h2>السلة</h2>
+        <div class="small">السلة محفوظة على جهازك (localStorage). الطلب يُحفظ في Supabase.</div>
+        <div class="sep"></div>
+
+        <div id="cartBox"></div>
+        <div class="row" style="margin-top:10px; align-items:center">
+          <div class="badge" id="cartTotalBadge">الإجمالي: 0 USDT</div>
+          <div class="badge" id="cartFeeBadge">عمولة المنصة (8%): 0 USDT</div>
+          <button class="btn primary" id="checkoutBtn" style="flex:0 0 auto">Checkout</button>
+          <button class="btn" id="clearCartBtn" style="flex:0 0 auto">تفريغ</button>
+        </div>
+
+        <div class="sep"></div>
+        <div id="mainMsg" class="msg muted">جاهز.</div>
+      </div>
+
+      <!-- RIGHT: Auth + Seller + Admin -->
+      <div class="card">
+        <h2>الحساب</h2>
+        <div class="small">تسجيل جديد / دخول. بعد الدخول ستظهر لوحة البائع.</div>
+
+        <div class="sep"></div>
+
+        <div class="row">
+          <input class="input" id="email" placeholder="البريد الإلكتروني" />
+          <input class="input" id="password" type="password" placeholder="كلمة المرور (8 أحرف أو أكثر)" />
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn good" id="signupBtn">تسجيل جديد</button>
+          <button class="btn primary" id="loginBtn">دخول</button>
+        </div>
+
+        <div class="sep"></div>
+
+        <h2>لوحة البائع</h2>
+        <div class="small">أضف منتجك (سيُسجّل على حسابك). ثم ستجده في “منتجاتي”.</div>
+
+        <div class="sep"></div>
+
+        <div id="sellerLocked" class="msg">🔒 سجّل الدخول أولاً لفتح لوحة البائع.</div>
+
+        <div id="sellerPanel" style="display:none">
+          <div class="row">
+            <select id="newCategory">
+              <option>عطر</option>
+              <option>نظارات</option>
+              <option>ملابس</option>
+              <option>إلكترونيات</option>
+              <option>أخرى</option>
+            </select>
+            <input class="input" id="newTitle" placeholder="اسم المنتج" />
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <input class="input" id="newPrice" placeholder="السعر (مثال: 30)" inputmode="decimal" />
+            <input class="input" id="newImage" placeholder="رابط الصورة (https://...jpg/png)" />
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <input class="input" id="newDesc" placeholder="وصف قصير" />
+            <button class="btn good" id="addProductBtn" style="flex:0 0 auto">إضافة المنتج</button>
+          </div>
+
+          <div class="sep"></div>
+
+          <h2>منتجاتي</h2>
+          <div id="myProductsBox" class="products"></div>
+
+          <div class="sep"></div>
+
+          <h2>طلباتي</h2>
+          <div class="small">الطلبات التي قام بها حسابك (كمشتري).</div>
+          <div id="myOrdersBox" class="msg muted">لا شيء بعد.</div>
+        </div>
+
+        <div class="sep"></div>
+
+        <h2>لوحة الإدارة</h2>
+        <div class="small">تظهر فقط للأدمن UID: <b>6ca64249-8ed9-4b8e-a7fa-ac2f42671cdd</b></div>
+
+        <div id="adminLocked" class="msg">🔒 غير متاحة.</div>
+        <div id="adminPanel" style="display:none">
+          <div class="kpi">
+            <div class="k"><div class="muted">عدد المستخدمين (تقريبي)</div><div class="v" id="kUsers">-</div></div>
+            <div class="k"><div class="muted">عدد المنتجات</div><div class="v" id="kListings">-</div></div>
+            <div class="k"><div class="muted">عدد الطلبات</div><div class="v" id="kOrders">-</div></div>
+            <div class="k"><div class="muted">إجمالي عمولة المنصة</div><div class="v" id="kFees">-</div></div>
+          </div>
+          <div class="sep"></div>
+          <button class="btn" id="reloadAdminBtn">تحديث الإحصائيات</button>
+          <div class="sep"></div>
+          <div class="msg muted">ملاحظة: عرض عدد المستخدمين بدقة يحتاج صلاحيات admin/service role. هنا نعرض إحصاءات “المنتجات/الطلبات/العمولة” من الجداول العامة فقط.</div>
+        </div>
+
+        <div class="sep"></div>
+        <div id="sideMsg" class="msg muted">جاهز.</div>
+      </div>
+    </div>
   </div>
 
-  <script>
-    // قائمة السلة المخزنة في localStorage
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  <!-- Supabase JS -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
-    // إضافة منتج للسلة
-    function addToCart(productId) {
-      // تحديد المنتج المضاف
-      const product = document.querySelector(`.product-card[data-product-id="${productId}"]`);
-      const productName = product.querySelector('h5').textContent;
-      const productPrice = parseFloat(product.querySelector('p').textContent.split(':')[1].trim().replace('USD', '').trim());
+    /*********** 1) ضع بيانات مشروعك هنا ***********/
+    const SUPABASE_URL = "PUT_YOUR_SUPABASE_URL_HERE";
+    const SUPABASE_ANON_KEY = "PUT_YOUR_SUPABASE_ANON_KEY_HERE";
+    /************************************************/
 
-      // إضافة المنتج إلى السلة
-      cart.push({ productId, productName, productPrice });
-      
-      // حفظ السلة في localStorage
-      localStorage.setItem('cart', JSON.stringify(cart));
+    const ADMIN_UID = "6ca64249-8ed9-4b8e-a7fa-ac2f42671cdd";
+    const PLATFORM_FEE_RATE = 0.08;
 
-      // عرض إشعار
-      document.getElementById('cart-notification').style.display = 'block';
-      setTimeout(() => {
-        document.getElementById('cart-notification').style.display = 'none';
-      }, 3000); // إخفاء الإشعار بعد 3 ثواني
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // UI refs
+    const el = (id)=>document.getElementById(id);
+    const mainMsg = el("mainMsg");
+    const sideMsg = el("sideMsg");
+    const userPill = el("userPill");
+    const logoutBtn = el("logoutBtn");
+
+    const productsBox = el("productsBox");
+    const myProductsBox = el("myProductsBox");
+    const myOrdersBox = el("myOrdersBox");
+
+    const sellerLocked = el("sellerLocked");
+    const sellerPanel  = el("sellerPanel");
+
+    const adminLocked = el("adminLocked");
+    const adminPanel  = el("adminPanel");
+
+    // Cart
+    const CART_KEY = "luneviera_cart_v1";
+    const readCart = ()=> JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    const writeCart = (arr)=> localStorage.setItem(CART_KEY, JSON.stringify(arr));
+
+    function setMsg(target, text, type=""){
+      target.className = "msg " + (type ? type : "muted");
+      target.textContent = text;
     }
 
-    // ربط الزر لإضافة المنتجات إلى السلة
-    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-      button.addEventListener('click', function() {
-        const productId = this.closest('.product-card').getAttribute('data-product-id');
-        addToCart(productId);
-      });
-    });
-  </script>
+    function fmt(n){
+      const x = Number(n||0);
+      return (Math.round(x*100)/100).toFixed(2).replace(/\.00$/,"");
+    }
 
+    function calcFee(total){ return total * PLATFORM_FEE_RATE; }
+
+    function safeUrl(url){
+      try{
+        const u = new URL(url);
+        return u.href;
+      }catch{ return ""; }
+    }
+
+    async function getUser(){
+      const { data } = await supabase.auth.getUser();
+      return data.user || null;
+    }
+
+    function setAuthedUI(user){
+      if(user){
+        userPill.textContent = user.email;
+        logoutBtn.style.display = "";
+        sellerLocked.style.display = "none";
+        sellerPanel.style.display = "";
+      }else{
+        userPill.textContent = "غير مسجل";
+        logoutBtn.style.display = "none";
+        sellerLocked.style.display = "";
+        sellerPanel.style.display = "none";
+        adminLocked.style.display = "";
+        adminPanel.style.display = "none";
+      }
+    }
+
+    function isAdmin(user){ return user && user.id === ADMIN_UID; }
+
+    function renderProducts(listings){
+      productsBox.innerHTML = "";
+      if(!listings.length){
+        productsBox.innerHTML = `<div class="msg">لا توجد منتجات.</div>`;
+        return;
+      }
+
+      for(const p of listings){
+        const price = Number(p.price||0);
+        const fee = calcFee(price);
+
+        const img = safeUrl(p.image_url) ? `<img src="${p.image_url}" alt="">` : `<div class="muted">لا توجد صورة</div>`;
+
+        const card = document.createElement("div");
+        card.className = "p";
+        card.innerHTML = `
+          <div class="img">${img}</div>
+          <div class="b">
+            <div class="meta">
+              <span class="badge">${p.category || "أخرى"}</span>
+              <span class="badge">${p.status || "active"}</span>
+            </div>
+            <h3>${escapeHtml(p.title || "")}</h3>
+            <div class="meta">
+              <span class="price">USDT ${fmt(price)}</span>
+              <span class="fee">عمولة 8%: ${fmt(fee)} USDT</span>
+            </div>
+            <div class="small" style="margin-top:6px">${escapeHtml(p.description || "")}</div>
+            <div class="actions">
+              <button class="btn primary" data-add="${p.id}">أضف للسلة</button>
+            </div>
+          </div>
+        `;
+        productsBox.appendChild(card);
+      }
+
+      productsBox.querySelectorAll("[data-add]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const id = btn.getAttribute("data-add");
+          addToCart(id);
+        });
+      });
+    }
+
+    function renderMyProducts(listings){
+      myProductsBox.innerHTML = "";
+      if(!listings.length){
+        myProductsBox.innerHTML = `<div class="msg">لا توجد منتجات لك بعد.</div>`;
+        return;
+      }
+
+      for(const p of listings){
+        const img = safeUrl(p.image_url) ? `<img src="${p.image_url}" alt="">` : `<div class="muted">لا توجد صورة</div>`;
+        const card = document.createElement("div");
+        card.className = "p";
+        card.innerHTML = `
+          <div class="img">${img}</div>
+          <div class="b">
+            <div class="meta">
+              <span class="badge">${p.category || "أخرى"}</span>
+              <span class="badge">${p.status || "active"}</span>
+            </div>
+            <h3>${escapeHtml(p.title || "")}</h3>
+            <div class="meta">
+              <span class="price">USDT ${fmt(p.price||0)}</span>
+              <span class="muted">ID: ${p.id}</span>
+            </div>
+            <div class="small" style="margin-top:6px">${escapeHtml(p.description || "")}</div>
+            <div class="actions">
+              <button class="btn bad" data-del="${p.id}">حذف</button>
+            </div>
+          </div>
+        `;
+        myProductsBox.appendChild(card);
+      }
+
+      myProductsBox.querySelectorAll("[data-del]").forEach(btn=>{
+        btn.addEventListener("click", async ()=>{
+          const user = await getUser();
+          if(!user) return setMsg(sideMsg, "سجّل الدخول أولاً.", "bad");
+
+          const id = btn.getAttribute("data-del");
+          const { error } = await supabase.from("listings").delete().eq("id", id);
+          if(error) return setMsg(sideMsg, "خطأ حذف المنتج: " + error.message, "bad");
+
+          setMsg(sideMsg, "تم حذف المنتج.", "good");
+          await refreshAll();
+        });
+      });
+    }
+
+    function escapeHtml(s){
+      return String(s||"")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // ========= Supabase fetch =========
+    async function loadListings(){
+      const q = (el("searchBox").value || "").trim();
+      const cat = el("categoryFilter").value || "";
+
+      let query = supabase
+        .from("listings")
+        .select("id,title,description,price,image_url,category,status,seller_id,created_at")
+        .eq("status","active")
+        .order("created_at", { ascending:false });
+
+      if(cat) query = query.eq("category", cat);
+      if(q)   query = query.ilike("title", `%${q}%`);
+
+      const { data, error } = await query;
+      if(error){
+        setMsg(mainMsg, "خطأ تحميل المنتجات: " + error.message, "bad");
+        renderProducts([]);
+        return [];
+      }
+      renderProducts(data || []);
+      setMsg(mainMsg, "تم تحميل المنتجات بنجاح.", "good");
+      return data || [];
+    }
+
+    async function loadMyListings(user){
+      const { data, error } = await supabase
+        .from("listings")
+        .select("id,title,description,price,image_url,category,status,created_at")
+        .eq("seller_id", user.id)
+        .order("created_at", { ascending:false });
+
+      if(error){
+        setMsg(sideMsg, "خطأ تحميل منتجاتك: " + error.message + "\n(غالبًا سياسة RLS تمنع أو seller_id غير صحيح)", "bad");
+        renderMyProducts([]);
+        return [];
+      }
+      renderMyProducts(data || []);
+      return data || [];
+    }
+
+    async function loadMyOrders(user){
+      // يعرض الطلبات كمشتري
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id,status,total_amount,platform_fee,created_at")
+        .eq("buyer_id", user.id)
+        .order("created_at", { ascending:false });
+
+      if(error){
+        myOrdersBox.className="msg bad";
+        myOrdersBox.textContent = "خطأ تحميل الطلبات: " + error.message;
+        return;
+      }
+      if(!data || !data.length){
+        myOrdersBox.className="msg muted";
+        myOrdersBox.textContent = "لا توجد طلبات بعد.";
+        return;
+      }
+
+      const lines = data.map(o =>
+        `• ${o.id}\n  الحالة: ${o.status} | الإجمالي: ${fmt(o.total_amount)} USDT | عمولة: ${fmt(o.platform_fee)} USDT`
+      ).join("\n\n");
+      myOrdersBox.className="msg good";
+      myOrdersBox.textContent = lines;
+    }
+
+    // ========= Cart =========
+    function cartTotal(){
+      const cart = readCart();
+      const total = cart.reduce((s,it)=> s + Number(it.price||0)*Number(it.qty||1), 0);
+      return total;
+    }
+
+    function renderCart(){
+      const cart = readCart();
+      const box = el("cartBox");
+      box.innerHTML = "";
+
+      if(!cart.length){
+        box.innerHTML = `<div class="msg">السلة فارغة.</div>`;
+      }else{
+        const items = document.createElement("div");
+        items.className = "msg";
+        items.style.background = "rgba(255,255,255,.03)";
+        items.innerHTML = cart.map(it=>`
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;border-bottom:1px solid rgba(255,255,255,.08);padding:8px 0">
+            <div>
+              <b>${escapeHtml(it.title)}</b>
+              <div class="small">USDT ${fmt(it.price)} × ${it.qty}</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn" data-minus="${it.id}" style="padding:8px 10px">-</button>
+              <button class="btn" data-plus="${it.id}" style="padding:8px 10px">+</button>
+              <button class="btn bad" data-rm="${it.id}" style="padding:8px 10px">حذف</button>
+            </div>
+          </div>
+        `).join("");
+        box.appendChild(items);
+
+        box.querySelectorAll("[data-minus]").forEach(b=>b.onclick=()=>changeQty(b.dataset.minus,-1));
+        box.querySelectorAll("[data-plus]").forEach(b=>b.onclick=()=>changeQty(b.dataset.plus,+1));
+        box.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>removeFromCart(b.dataset.rm));
+      }
+
+      const total = cartTotal();
+      el("cartTotalBadge").textContent = `الإجمالي: ${fmt(total)} USDT`;
+      el("cartFeeBadge").textContent = `عمولة المنصة (8%): ${fmt(calcFee(total))} USDT`;
+    }
+
+    async function addToCart(listingId){
+      // نجلب المنتج من supabase (لضمان السعر الصحيح)
+      const { data, error } = await supabase
+        .from("listings")
+        .select("id,title,price,status")
+        .eq("id", listingId)
+        .single();
+
+      if(error) return setMsg(mainMsg, "خطأ إضافة للسلة: " + error.message, "bad");
+      if(!data || data.status !== "active") return setMsg(mainMsg, "هذا المنتج غير متاح.", "bad");
+
+      const cart = readCart();
+      const idx = cart.findIndex(x=>x.id===data.id);
+      if(idx>=0) cart[idx].qty += 1;
+      else cart.push({ id:data.id, title:data.title, price:Number(data.price||0), qty:1 });
+
+      writeCart(cart);
+      renderCart();
+      setMsg(mainMsg, "تمت إضافة المنتج للسلة ✅", "good");
+    }
+
+    function changeQty(id, delta){
+      const cart = readCart();
+      const idx = cart.findIndex(x=>x.id===id);
+      if(idx<0) return;
+      cart[idx].qty += delta;
+      if(cart[idx].qty <= 0) cart.splice(idx,1);
+      writeCart(cart);
+      renderCart();
+    }
+
+    function removeFromCart(id){
+      const cart = readCart().filter(x=>x.id!==id);
+      writeCart(cart);
+      renderCart();
+    }
+
+    // ========= Checkout (orders + order_items) =========
+    async function checkout(){
+      const user = await getUser();
+      if(!user) return setMsg(mainMsg, "سجّل الدخول أولاً لإتمام الطلب.", "bad");
+
+      const cart = readCart();
+      if(!cart.length) return setMsg(mainMsg, "السلة فارغة.", "bad");
+
+      const total = cartTotal();
+      const fee = calcFee(total);
+
+      // 1) أنشئ order
+      const { data: order, error: e1 } = await supabase
+        .from("orders")
+        .insert({
+          buyer_id: user.id,
+          status: "pending",
+          total_amount: total,
+          platform_fee: fee
+        })
+        .select("id")
+        .single();
+
+      if(e1) return setMsg(mainMsg, "خطأ إنشاء الطلب: " + e1.message, "bad");
+
+      // 2) عناصر الطلب
+      const itemsPayload = cart.map(it=>({
+        order_id: order.id,
+        listing_id: it.id,
+        qty: it.qty,
+        unit_price: it.price
+      }));
+
+      const { error: e2 } = await supabase.from("order_items").insert(itemsPayload);
+      if(e2) return setMsg(mainMsg, "تم إنشاء الطلب لكن خطأ في عناصر الطلب: " + e2.message, "bad");
+
+      // 3) تفريغ السلة + تحديث
+      writeCart([]);
+      renderCart();
+      setMsg(mainMsg, "تم إنشاء الطلب بنجاح ✅ رقم الطلب: " + order.id, "good");
+      await loadMyOrders(user);
+
+      // هنا لاحقًا تستطيع تعمل صفحة “دفع USDT” أو “تأكيد الدفع” حسب تصميمك.
+    }
+
+    // ========= Add listing =========
+    async function addListing(){
+      const user = await getUser();
+      if(!user) return setMsg(sideMsg, "سجّل الدخول أولاً.", "bad");
+
+      const category = el("newCategory").value.trim();
+      const title = el("newTitle").value.trim();
+      const price = Number(String(el("newPrice").value).replace(",","."));
+      const image_url = el("newImage").value.trim();
+      const description = el("newDesc").value.trim();
+
+      if(!title || !Number.isFinite(price) || price<=0){
+        return setMsg(sideMsg, "أدخل اسم المنتج + سعر صحيح.", "bad");
+      }
+
+      if(image_url && !safeUrl(image_url)){
+        return setMsg(sideMsg, "رابط الصورة غير صحيح. لازم يبدأ https://", "bad");
+      }
+
+      // insert
+      const { error } = await supabase.from("listings").insert({
+        seller_id: user.id,
+        category,
+        title,
+        description,
+        price,
+        image_url: image_url || null,
+        status: "active"
+      });
+
+      if(error){
+        return setMsg(sideMsg,
+          "خطأ إضافة المنتج: " + error.message +
+          "\nإذا يقول RLS: معناها سياسة الجدول تمنع INSERT — لازم سياسة insert تسمح للمسجلين.",
+          "bad"
+        );
+      }
+
+      el("newTitle").value = "";
+      el("newPrice").value = "";
+      el("newImage").value = "";
+      el("newDesc").value = "";
+
+      setMsg(sideMsg, "تمت إضافة المنتج ✅", "good");
+      await refreshAll();
+    }
+
+    // ========= Admin stats =========
+    async function loadAdminStats(){
+      const user = await getUser();
+      if(!isAdmin(user)) return;
+
+      // listings count
+      const { count: listingsCount, error: eL } = await supabase
+        .from("listings").select("id", { count:"exact", head:true });
+
+      // orders count
+      const { count: ordersCount, error: eO } = await supabase
+        .from("orders").select("id", { count:"exact", head:true });
+
+      // sum platform_fee
+      const { data: feesRows, error: eF } = await supabase
+        .from("orders")
+        .select("platform_fee");
+
+      const feesSum = (feesRows||[]).reduce((s,r)=> s + Number(r.platform_fee||0), 0);
+
+      el("kListings").textContent = eL ? "—" : String(listingsCount ?? "-");
+      el("kOrders").textContent   = eO ? "—" : String(ordersCount ?? "-");
+      el("kFees").textContent     = eF ? "—" : (fmt(feesSum) + " USDT");
+
+      // عدد المستخدمين بدقة يحتاج service role، لذلك نكتب “غير متاح هنا”
+      el("kUsers").textContent = "يحتاج Admin Key";
+
+      if(eL||eO||eF){
+        setMsg(sideMsg, "تنبيه: بعض إحصاءات الإدارة فشلت بسبب سياسات RLS أو صلاحيات.", "bad");
+      }
+    }
+
+    // ========= Refresh all =========
+    async function refreshAll(){
+      renderCart();
+      const user = await getUser();
+      setAuthedUI(user);
+
+      await loadListings();
+
+      if(user){
+        await loadMyListings(user);
+        await loadMyOrders(user);
+
+        if(isAdmin(user)){
+          adminLocked.style.display = "none";
+          adminPanel.style.display = "";
+          await loadAdminStats();
+        }else{
+          adminLocked.style.display = "";
+          adminPanel.style.display = "none";
+        }
+      }
+    }
+
+    // ========= Auth actions =========
+    async function signup(){
+      const email = el("email").value.trim();
+      const password = el("password").value;
+
+      const { error } = await supabase.auth.signUp({ email, password });
+      if(error) return setMsg(sideMsg, "خطأ تسجيل جديد: " + error.message, "bad");
+
+      setMsg(sideMsg, "تم التسجيل ✅\nقد يطلب تأكيد البريد حسب إعدادات Supabase.", "good");
+      await refreshAll();
+    }
+
+    async function login(){
+      const email = el("email").value.trim();
+      const password = el("password").value;
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if(error) return setMsg(sideMsg, "خطأ دخول: " + error.message, "bad");
+
+      setMsg(sideMsg, "تم تسجيل الدخول ✅", "good");
+      await refreshAll();
+    }
+
+    async function logout(){
+      const { error } = await supabase.auth.signOut();
+      if(error) return setMsg(sideMsg, "خطأ خروج: " + error.message, "bad");
+
+      setMsg(sideMsg, "تم تسجيل الخروج ✅", "good");
+      await refreshAll();
+    }
+
+    // ========= Events =========
+    el("signupBtn").addEventListener("click", signup);
+    el("loginBtn").addEventListener("click", login);
+    el("logoutBtn").addEventListener("click", logout);
+
+    el("addProductBtn").addEventListener("click", addListing);
+    el("checkoutBtn").addEventListener("click", checkout);
+    el("clearCartBtn").addEventListener("click", ()=>{ writeCart([]); renderCart(); setMsg(mainMsg,"تم تفريغ السلة.","good"); });
+
+    el("refreshBtn").addEventListener("click", refreshAll);
+    el("reloadAdminBtn").addEventListener("click", loadAdminStats);
+
+    el("clearSearchBtn").addEventListener("click", ()=>{
+      el("searchBox").value = "";
+      refreshAll();
+    });
+
+    el("searchBox").addEventListener("input", ()=>{
+      // تحميل خفيف
+      loadListings();
+    });
+
+    el("categoryFilter").addEventListener("change", loadListings);
+
+    // Listen to auth changes
+    supabase.auth.onAuthStateChange(async ()=>{
+      await refreshAll();
+    });
+
+    // Start
+    (async ()=>{
+      if(SUPABASE_URL.includes("PUT_YOUR") || SUPABASE_ANON_KEY.includes("PUT_YOUR")){
+        setMsg(mainMsg, "ضع SUPABASE_URL و SUPABASE_ANON_KEY في أعلى الملف ثم ارفع الملف على GitHub Pages.", "bad");
+        setMsg(sideMsg, "ضع SUPABASE_URL و SUPABASE_ANON_KEY أولاً.", "bad");
+      }
+      await refreshAll();
+    })();
+  </script>
 </body>
 </html>
