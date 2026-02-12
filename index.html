@@ -90,6 +90,34 @@
       margin-top: 15px;
       color: #f0f0f0;
     }
+    .nav-bar {
+      background-color: #333;
+      padding: 10px;
+      display: flex;
+      justify-content: space-around;
+    }
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+    }
+    .nav-bar a:hover {
+      color: #28a745;
+    }
+    .seller-page {
+      background-color: #444;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+    .seller-page input,
+    .seller-page button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -99,34 +127,40 @@
     <p>التسجيل والنسبة المئوية 8% من المبيعات</p>
   </header>
 
+  <!-- Navbar -->
+  <div class="nav-bar">
+    <a href="#products">المنتجات</a>
+    <a href="#add-product">إضافة منتج</a>
+    <a href="#login-form">تسجيل الدخول</a>
+    <a href="#register-form">تسجيل جديد</a>
+  </div>
+
   <div class="container">
 
     <!-- صفحة تسجيل الدخول أو حساب التاجر -->
-    <div class="account-login">
+    <div class="account-login" id="login-form">
       <h2>تسجيل الدخول</h2>
       <form id="loginForm">
         <input type="email" id="email" placeholder="البريد الإلكتروني" required>
         <input type="password" id="password" placeholder="كلمة المرور" required>
         <button type="submit">تسجيل الدخول</button>
       </form>
-      <div id="loginMessage"></div>
-      <p class="new-account">ليس لديك حساب؟ <a href="#" onclick="showRegisterForm()">تسجيل جديد</a></p>
+      <p class="new-account">ليس لديك حساب؟ <a href="#register-form">تسجيل جديد</a></p>
     </div>
 
     <!-- صفحة التسجيل الجديد -->
-    <div class="account-login" id="registerForm" style="display: none;">
+    <div class="account-login" id="register-form" style="display: none;">
       <h2>إنشاء حساب جديد</h2>
       <form id="registerFormContent">
         <input type="email" id="registerEmail" placeholder="البريد الإلكتروني" required>
         <input type="password" id="registerPassword" placeholder="كلمة المرور" required>
         <button type="submit">تسجيل الحساب</button>
       </form>
-      <div id="registerMessage"></div>
-      <p class="new-account">لديك حساب؟ <a href="#" onclick="showLoginForm()">تسجيل الدخول</a></p>
+      <p class="new-account">لديك حساب؟ <a href="#login-form">تسجيل الدخول</a></p>
     </div>
 
     <!-- صفحة المنتجات الخاصة بالمنصة -->
-    <div class="platform-products">
+    <div class="platform-products" id="products">
       <h2>منتجاتنا</h2>
 
       <div class="product-card">
@@ -150,6 +184,17 @@
       </div>
     </div>
 
+    <!-- صفحة إضافة المنتج للبائعين -->
+    <div class="seller-page" id="add-product" style="display: none;">
+      <h2>إضافة منتج</h2>
+      <form id="addProductForm">
+        <input type="text" id="productName" placeholder="اسم المنتج" required>
+        <input type="number" id="productPrice" placeholder="السعر (USD)" required>
+        <input type="file" id="productImage" accept="image/*" required>
+        <button type="submit">إضافة المنتج</button>
+      </form>
+    </div>
+
   </div>
 
   <script>
@@ -160,37 +205,48 @@
       const password = document.getElementById("password").value;
 
       if (email && password) {
-        document.getElementById("loginMessage").innerHTML = `تم تسجيل الدخول بنجاح. مرحبًا ${email}!`;
+        document.getElementById("loginForm").style.display = "none";
+        alert(`تم تسجيل الدخول بنجاح! مرحبًا ${email}`);
       } else {
-        document.getElementById("loginMessage").innerHTML = "فشل في تسجيل الدخول. تحقق من بياناتك.";
+        alert("فشل في تسجيل الدخول. تحقق من بياناتك.");
       }
     });
 
     // إظهار نموذج التسجيل
-    function showRegisterForm() {
-      document.getElementById("registerForm").style.display = "block";
-      document.getElementById("loginForm").style.display = "none";
-    }
-
-    // إظهار نموذج تسجيل الدخول
-    function showLoginForm() {
-      document.getElementById("registerForm").style.display = "none";
-      document.getElementById("loginForm").style.display = "block";
-    }
-
-    // التسجيل الجديد
     document.getElementById("registerFormContent").addEventListener("submit", function(event) {
       event.preventDefault();
       const email = document.getElementById("registerEmail").value;
       const password = document.getElementById("registerPassword").value;
 
       if (email && password) {
-        document.getElementById("registerMessage").innerHTML = `تم التسجيل بنجاح. مرحبًا ${email}!`;
+        alert(`تم التسجيل بنجاح! مرحبًا ${email}`);
+        document.getElementById("registerForm").style.display = "none";
+        document.getElementById("loginForm").style.display = "block";
       } else {
-        document.getElementById("registerMessage").innerHTML = "فشل في التسجيل. تحقق من البيانات.";
+        alert("فشل في التسجيل. تحقق من البيانات.");
       }
     });
+
+    // إظهار صفحة إضافة المنتج للبائعين
+    function showAddProductForm() {
+      document.getElementById("add-product").style.display = "block";
+    }
+
+    // إضافة منتج
+    document.getElementById("addProductForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const productName = document.getElementById("productName").value;
+      const productPrice = document.getElementById("productPrice").value;
+      const productImage = document.getElementById("productImage").files[0];
+
+      if (productName && productPrice && productImage) {
+        alert(`تم إضافة المنتج: ${productName} بسعر: USD ${productPrice}`);
+      } else {
+        alert("يرجى ملء جميع الحقول.");
+      }
+    });
+
   </script>
 
 </body>
-  </html>
+</html>
